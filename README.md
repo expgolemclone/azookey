@@ -3,7 +3,7 @@
 The three JSON files in this repository are AzooKey custom-tab definitions:
 `☆123.json`, `ABC.json`, and `あいう.json`.
 
-These custom tabs are based on the Onishi layout (Onishi hairetsu).
+These custom tabs are based on the Onishi layout.
 
 ## Import on iPhone
 
