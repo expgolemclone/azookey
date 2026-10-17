@@ -3,6 +3,8 @@
 The three JSON files in this repository are AzooKey custom-tab definitions:
 `☆123.json`, `ABC.json`, and `あいう.json`.
 
+These custom tabs are based on the Onishi layout (Onishi hairetsu).
+
 ## Import on iPhone
 
 1. Make these files available in the iPhone Files app, preferably in iCloud Drive.
