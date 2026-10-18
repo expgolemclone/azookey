@@ -14,18 +14,12 @@
           "design": {
             "color": "special",
             "label": {
-              "text": " ☆123 "
+              "text": "☆123"
             }
           },
           "longpress_actions": {
             "repeat": [],
-            "start": [
-              {
-                "identifier": "clipboard_history_tab",
-                "tab_type": "system",
-                "type": "move_tab"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -50,9 +44,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "where",
+                "left": "who",
+                "right": "when",
+                "top": "what"
+              },
               "main": "R",
-              "sub": "",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -191,9 +190,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "U",
+                "left": "on",
+                "right": "K",
+                "top": "of"
+              },
               "main": "O",
-              "sub": "     KU",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -332,9 +336,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "F",
+                "left": "Q",
+                "right": "how",
+                "top": "that"
+              },
               "main": "H",
-              "sub": "Q      F",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -483,12 +492,7 @@
                 "type": "delete"
               }
             ],
-            "start": [
-              {
-                "count": 1,
-                "type": "delete"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -511,11 +515,7 @@
                 },
                 "press_actions": [
                   {
-                    "direction": "backward",
-                    "targets": [
-                      "\n"
-                    ],
-                    "type": "smart_delete"
+                    "type": "smart_delete_default"
                   }
                 ]
               },
@@ -696,9 +696,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "no",
+                "left": "not",
+                "right": "G",
+                "top": "and"
+              },
               "main": "N",
-              "sub": "     G  ",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -837,9 +842,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "M",
+                "left": "X",
+                "right": "D",
+                "top": "C"
+              },
               "main": "E",
-              "sub": "XCDM",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -978,9 +988,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "P",
+                "left": "W",
+                "right": "Y",
+                "top": "the"
+              },
               "main": "T",
-              "sub": "W   YP",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -1119,7 +1134,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "   空白   "
+              "text": "空白"
             }
           },
           "longpress_actions": {
@@ -1164,7 +1179,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "text": "   tab   "
+                    "text": "tab"
                   }
                 },
                 "longpress_actions": {
@@ -1226,18 +1241,12 @@
           "design": {
             "color": "special",
             "label": {
-              "text": " あいう "
+              "text": "あいう"
             }
           },
           "longpress_actions": {
             "repeat": [],
-            "start": [
-              {
-                "identifier": "clipboard_history_tab",
-                "tab_type": "system",
-                "type": "move_tab"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -1262,9 +1271,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "it",
+                "left": "is",
+                "right": "Z",
+                "top": "in"
+              },
               "main": "I",
-              "sub": "    Z  ",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -1403,9 +1417,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "as",
+                "left": "are",
+                "right": "at",
+                "top": "V"
+              },
               "main": "A",
-              "sub": "  V     ",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -1544,9 +1563,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "for",
+                "left": "B",
+                "right": "you",
+                "top": "J"
+              },
               "main": "S",
-              "sub": "BJ     ",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -1749,7 +1773,30 @@
               "type": "move_tab"
             }
           ],
-          "variations": []
+          "variations": [
+            {
+              "direction": "right",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "Words"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "identifier": "Words",
+                    "tab_type": "custom",
+                    "type": "move_tab"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            }
+          ]
         },
         "key_type": "custom",
         "specifier": {
@@ -1765,9 +1812,13 @@
           "design": {
             "color": "normal",
             "label": {
-              "main": "  caps  ",
-              "sub": "' \" -",
-              "type": "main_and_sub"
+              "directions": {
+                "left": "'",
+                "right": "-",
+                "top": "\""
+              },
+              "main": "caps",
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -1874,9 +1925,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "can",
+                "left": "with",
+                "right": "this",
+                "top": "why"
+              },
               "main": "L",
-              "sub": "",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -2039,7 +2095,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "text": ""
+                    "text": "."
                   }
                 },
                 "longpress_actions": {
@@ -2065,7 +2121,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "text": ""
+                    "text": "?"
                   }
                 },
                 "longpress_actions": {
@@ -2091,7 +2147,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "text": ""
+                    "text": "!"
                   }
                 },
                 "longpress_actions": {

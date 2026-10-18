@@ -14,7 +14,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": " ☆123 "
+              "text": "☆123"
             }
           },
           "longpress_actions": {
@@ -485,7 +485,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "system_image": "xmark"
+                    "system_image": "delete.left.fill"
                   }
                 },
                 "longpress_actions": {
@@ -505,7 +505,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "text": ""
+                    "system_image": "keyboard.onehanded.right.fill"
                   }
                 },
                 "longpress_actions": {
@@ -514,16 +514,7 @@
                 },
                 "press_actions": [
                   {
-                    "direction": "backward",
-                    "targets": [
-                      "。",
-                      "、",
-                      "\n",
-                      ".",
-                      ",",
-                      " "
-                    ],
-                    "type": "smart_delete"
+                    "type": "enable_resizing_mode"
                   }
                 ]
               },
@@ -534,7 +525,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "text": ""
+                    "system_image": "keyboard.chevron.compact.down.fill"
                   }
                 },
                 "longpress_actions": {
@@ -565,7 +556,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "  ABC  "
+              "text": "ABC"
             }
           },
           "longpress_actions": {
@@ -1012,7 +1003,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "   空白   "
+              "text": "空白"
             }
           },
           "longpress_actions": {
@@ -1035,7 +1026,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "text": "   tab   "
+                    "text": "tab"
                   }
                 },
                 "longpress_actions": {
@@ -1669,7 +1660,30 @@
               "type": "move_tab"
             }
           ],
-          "variations": []
+          "variations": [
+            {
+              "direction": "right",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "Words"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "identifier": "Words",
+                    "tab_type": "custom",
+                    "type": "move_tab"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            }
+          ]
         },
         "key_type": "custom",
         "specifier": {

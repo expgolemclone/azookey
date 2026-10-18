@@ -133,9 +133,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "↓",
+                "left": "←",
+                "right": "→",
+                "top": "↑"
+              },
               "main": "1",
-              "sub": " ←↑→↓",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -274,9 +279,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "%",
+                "left": "¥",
+                "right": "$",
+                "top": "°"
+              },
               "main": "2",
-              "sub": "¥°$%",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -415,9 +425,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "÷",
+                "left": "+",
+                "right": "-",
+                "top": "×"
+              },
               "main": "3",
-              "sub": "+×-÷",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -566,12 +581,7 @@
                 "type": "delete"
               }
             ],
-            "start": [
-              {
-                "count": 1,
-                "type": "delete"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -656,7 +666,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "  ABC  "
+              "text": "ABC"
             }
           },
           "longpress_actions": {
@@ -686,9 +696,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": ";",
+                "left": "〒",
+                "right": "･",
+                "top": ":"
+              },
               "main": "4",
-              "sub": "〒:･;",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -827,9 +842,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "|",
+                "left": "@",
+                "right": "#",
+                "top": "&"
+              },
               "main": "5",
-              "sub": "@&#|",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -968,9 +988,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "≈",
+                "left": "<",
+                "right": ">",
+                "top": "="
+              },
               "main": "6",
-              "sub": "<=>≈",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -1109,7 +1134,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "   空白   "
+              "text": "空白"
             }
           },
           "longpress_actions": {
@@ -1132,7 +1157,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "text": "   tab   "
+                    "text": "tab"
                   }
                 },
                 "longpress_actions": {
@@ -1216,7 +1241,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": " あいう "
+              "text": "あいう"
             }
           },
           "longpress_actions": {
@@ -1246,9 +1271,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "※",
+                "left": "○",
+                "right": "♡",
+                "top": "☆"
+              },
               "main": "7",
-              "sub": "○☆♡※",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -1387,9 +1417,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "⟨⟩",
+                "left": "[]",
+                "right": "()",
+                "top": "{}"
+              },
               "main": "8",
-              "sub": "[{(⟨",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -1540,9 +1575,14 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "bottom": "_",
+                "left": "\\",
+                "right": "/",
+                "top": "^"
+              },
               "main": "9",
-              "sub": " \\^/_",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -1745,7 +1785,30 @@
               "type": "move_tab"
             }
           ],
-          "variations": []
+          "variations": [
+            {
+              "direction": "right",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "Words"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "identifier": "Words",
+                    "tab_type": "custom",
+                    "type": "move_tab"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            }
+          ]
         },
         "key_type": "custom",
         "specifier": {
@@ -1761,7 +1824,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "text": "  ^_  "
+              "text": "^_"
             }
           },
           "longpress_actions": {
@@ -1846,9 +1909,13 @@
           "design": {
             "color": "normal",
             "label": {
+              "directions": {
+                "left": "'",
+                "right": "@",
+                "top": "\""
+              },
               "main": "0",
-              "sub": "' \" @",
-              "type": "main_and_sub"
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -1991,7 +2058,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "text": ""
+                    "text": "."
                   }
                 },
                 "longpress_actions": {

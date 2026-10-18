@@ -1328,21 +1328,86 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "ABC"
+              "system_image": "delete.left"
             }
           },
           "longpress_actions": {
-            "repeat": [],
+            "repeat": [
+              {
+                "count": 1,
+                "type": "delete"
+              }
+            ],
             "start": []
           },
           "press_actions": [
             {
-              "identifier": "ABC",
-              "tab_type": "custom",
-              "type": "move_tab"
+              "count": 1,
+              "type": "delete"
             }
           ],
-          "variations": []
+          "variations": [
+            {
+              "direction": "left",
+              "key": {
+                "design": {
+                  "label": {
+                    "system_image": "delete.left.fill"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "type": "smart_delete_default"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "top",
+              "key": {
+                "design": {
+                  "label": {
+                    "system_image": "keyboard.onehanded.right.fill"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "type": "enable_resizing_mode"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "bottom",
+              "key": {
+                "design": {
+                  "label": {
+                    "system_image": "keyboard.chevron.compact.down.fill"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "type": "dismiss_keyboard"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            }
+          ]
         },
         "key_type": "custom",
         "specifier": {
