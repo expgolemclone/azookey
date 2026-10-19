@@ -1,3 +1,4 @@
+from copy import deepcopy
 import json
 from pathlib import Path
 import unittest
@@ -25,6 +26,183 @@ def outward_side_flicks(layout):
             ):
                 violations.append((position["x"], position["y"], direction))
     return violations
+
+
+def shared_control_keys(layouts):
+    by_label = {}
+    for name, layout in layouts.items():
+        for entry in layout["interface"]["keys"]:
+            if entry["key_type"] != "custom":
+                continue
+            label = entry["key"]["design"]["label"]
+            if "system_image" in label:
+                identity = ("system_image", label["system_image"])
+            else:
+                identity = ("text", label["main"] if "main" in label else label["text"])
+            by_label.setdefault(identity, []).append((name, entry))
+    return {
+        label: entries
+        for label, entries in by_label.items()
+        if len({name for name, _ in entries}) > 1
+        and any(
+            all(
+                action["type"] != "input" or action["text"].isspace()
+                for action in entry["key"]["press_actions"]
+            )
+            for _, entry in entries
+        )
+    }
+
+
+def key_behavior(key):
+    behavior = {field: value for field, value in key.items() if field != "design"}
+    if "variations" in key:
+        behavior["variations"] = sorted(
+            (
+                {**variation, "key": key_behavior(variation["key"])}
+                for variation in key["variations"]
+            ),
+            key=lambda variation: (
+                variation["type"],
+                variation["direction"] if variation["type"] == "flick_variation" else "",
+            ),
+        )
+    return behavior
+
+
+class SharedControlDetectionTests(unittest.TestCase):
+    def key(self, label, *, flicks=True):
+        key = {
+            "design": {"color": "normal", "label": label},
+            "press_actions": [{"type": "move_cursor", "count": 1}],
+            "longpress_actions": {
+                "start": [{"type": "move_cursor", "count": 1}],
+                "repeat": [{"type": "move_cursor", "count": 1}],
+            },
+        }
+        if flicks:
+            key["variations"] = [
+                {
+                    "type": "flick_variation",
+                    "direction": direction,
+                    "key": self.key({"text": direction}, flicks=False),
+                }
+                for direction in ("left", "right")
+            ]
+        return key
+
+    def layout(self, *keys):
+        return {
+            "interface": {
+                "keys": [
+                    {
+                        "key_type": "custom",
+                        "specifier": {"x": index, "y": 0},
+                        "key": key,
+                    }
+                    for index, key in enumerate(keys)
+                ]
+            }
+        }
+
+    def test_shared_controls_are_discovered_by_primary_label(self):
+        text = self.key({"text": "Shared"})
+        compound = self.key({
+            "type": "main_and_directions", "main": "Shared",
+            "directions": {"left": "Hint"},
+        })
+        icon = self.key({"system_image": "shared.icon"})
+        unique = self.key({"text": "Only here"})
+        layouts = {
+            "first": self.layout(text, icon, unique, unique, text),
+            "new": self.layout(icon, compound),
+            "later": self.layout(text),
+        }
+        layouts["later"]["interface"]["keys"].append({
+            "key_type": "system", "key": {"type": "flick_kogaki"},
+        })
+        self.assertEqual(
+            {label: [name for name, _ in entries]
+             for label, entries in shared_control_keys(layouts).items()},
+            {
+                ("text", "Shared"): ["first", "first", "new", "later"],
+                ("system_image", "shared.icon"): ["first", "new"],
+            },
+        )
+
+    def test_control_action_drift_does_not_hide_a_shared_key(self):
+        for action, expected in (
+            ({"type": "move_cursor", "count": 1}, True),
+            ({"type": "input", "text": " \t\n"}, True),
+            ({"type": "input", "text": ","}, False),
+        ):
+            with self.subTest(action=action):
+                original = self.key({"text": "Shared"})
+                original["press_actions"] = [action]
+                changed = deepcopy(original)
+                changed["press_actions"] = [{"type": "input", "text": "changed"}]
+                shared = shared_control_keys({
+                    "first": self.layout(original), "second": self.layout(changed),
+                })
+                self.assertEqual(bool(shared), expected)
+                if expected:
+                    self.assertEqual(len(shared[("text", "Shared")]), 2)
+                    self.assertNotEqual(key_behavior(original), key_behavior(changed))
+
+    def test_behavior_ignores_design_and_flick_list_order(self):
+        original = self.key({"text": "Shared"})
+        snapshot = deepcopy(original)
+        changed = deepcopy(original)
+        changed["design"] = {"color": "special", "label": {"text": "Redesigned"}}
+        changed["variations"].reverse()
+        for variation in changed["variations"]:
+            variation["key"]["design"]["label"] = {"text": "New hint"}
+        self.assertEqual(key_behavior(original), key_behavior(changed))
+        self.assertEqual(original, snapshot)
+
+    def test_behavior_preserves_actions_parameters_and_action_order(self):
+        original = self.key({"text": "Shared"})
+        for prefix in ((), ("variations", 0, "key")):
+            for suffix in (
+                ("press_actions",),
+                ("longpress_actions", "start"),
+                ("longpress_actions", "repeat"),
+            ):
+                path = prefix + suffix
+                with self.subTest(path=path):
+                    changed = deepcopy(original)
+                    actions = changed
+                    for field in path:
+                        actions = actions[field]
+                    actions[0]["count"] += 1
+                    self.assertNotEqual(key_behavior(original), key_behavior(changed))
+                    actions.append({"type": "complete"})
+                    ordered = deepcopy(key_behavior(changed))
+                    actions.reverse()
+                    self.assertNotEqual(ordered, key_behavior(changed))
+                    actions.clear()
+                    self.assertNotEqual(key_behavior(original), key_behavior(changed))
+
+    def test_longpress_variation_order_is_preserved(self):
+        original = self.key({"text": "Shared"})
+        for variation in original["variations"]:
+            variation["type"] = "longpress_variation"
+            del variation["direction"]
+        original["variations"][1]["key"]["press_actions"][0]["count"] = 2
+        changed = deepcopy(original)
+        changed["variations"].reverse()
+        self.assertNotEqual(key_behavior(original), key_behavior(changed))
+
+    def test_behavior_detects_missing_extra_and_redirected_flicks(self):
+        original = self.key({"text": "Shared"})
+        changed = deepcopy(original)
+        changed["variations"].pop()
+        self.assertNotEqual(key_behavior(original), key_behavior(changed))
+        changed = deepcopy(original)
+        changed["variations"][0]["direction"] = "top"
+        self.assertNotEqual(key_behavior(original), key_behavior(changed))
+        changed["variations"].append(deepcopy(original["variations"][0]))
+        self.assertNotEqual(key_behavior(original), key_behavior(changed))
 
 
 class EdgeDetectionTests(unittest.TestCase):
@@ -90,6 +268,22 @@ class LayoutTests(unittest.TestCase):
         }
         if not cls.layouts:
             raise AssertionError("No keyboard layouts found")
+
+    def test_shared_controls_have_identical_behavior(self):
+        shared = shared_control_keys(self.layouts)
+        self.assertTrue(shared, "No shared control keys found")
+        for label, entries in shared.items():
+            reference_name, reference = entries[0]
+            for name, entry in entries[1:]:
+                with self.subTest(
+                    label=label,
+                    reference=(reference_name, reference["specifier"]),
+                    file=name,
+                    position=entry["specifier"],
+                ):
+                    self.assertEqual(
+                        key_behavior(entry["key"]), key_behavior(reference["key"])
+                    )
 
     def test_keys_fit_their_grid(self):
         for name, layout in self.layouts.items():
