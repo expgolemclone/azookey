@@ -117,14 +117,14 @@ for (const [name, layout] of Object.entries(layouts)) {
     await expect(grid.getByRole('button')).toHaveText(ordered.map(keyLabel));
     expect((await grid.textContent()).replace(/\s/g, '')).toBe(ordered.map(keyLabel).join('').replace(/\s/g, ''));
     await expect(page.getByRole('table')).toHaveCount(0);
-    await expect(keyAt(grid, 0, 0)).toHaveText('?');
-    await expect(keyAt(grid, 0, 3)).toHaveText('ja');
+    await expect(keyAt(grid, 0, 0)).toHaveText('ja');
+    await expect(keyAt(grid, 0, 3)).toHaveText('?');
     await expectKeyLabelsToFit(grid);
     const origin = await grid.boundingBox();
     const cell = await keyAt(grid, 1, 0).boundingBox();
     const gap = await grid.evaluate((element) => parseFloat(getComputedStyle(element).gap));
 
-    for (const entry of ordered.filter((item) => item.specifier.x !== 0 || item.specifier.y !== 0)) {
+    for (const entry of ordered.filter((item) => item.specifier.x !== 0 || item.specifier.y !== 3)) {
       const { x, y, width, height } = entry.specifier;
       const button = keyAt(grid, x, y);
       await expect(button).toHaveAccessibleName(`${keyLabel(entry)}, x=${x}, y=${y}`);
@@ -167,17 +167,17 @@ for (const [name, layout] of Object.entries(layouts)) {
   });
 }
 
-test('the top-left tap toggles all flick hints and preserves help when switching layouts', async ({ page }) => {
+test('the bottom-left tap toggles all flick hints and preserves help when switching layouts', async ({ page }) => {
   await page.goto('/');
   let grid = await selectLayout(page, 'ja');
   const before = await grid.boundingBox();
   await keyAt(grid, 1, 0).click();
-  await keyAt(grid, 0, 0).click();
+  await keyAt(grid, 0, 3).click();
   await expect(page.getByRole('table')).toHaveCount(0);
   expect(await grid.boundingBox()).toEqual(before);
   for (const [name, layout] of Object.entries(layouts)) {
     grid = await selectLayout(page, name);
-    const toggle = keyAt(grid, 0, 0);
+    const toggle = keyAt(grid, 0, 3);
     await expect(toggle).toHaveText('?');
     await expect(toggle).toHaveAttribute('aria-pressed', 'true');
     await expect(toggle).toHaveAttribute('aria-controls', 'keyboard-layout');
@@ -192,7 +192,7 @@ test('the top-left tap toggles all flick hints and preserves help when switching
       }
     }
     await expectKeyLabelsToFit(grid);
-    await keyAt(grid, 0, 3).click();
+    await keyAt(grid, 0, 0).click();
     for (const [direction, target] of [['center', 'ja'], ['top', 'num'], ['right', 'eng']]) {
       await expect(actionRow(page, direction).getByRole('cell')).toHaveText([
         target, `move_tab(identifier="${target}-help", tab_type="custom")`,
@@ -206,9 +206,9 @@ test('the top-left tap toggles all flick hints and preserves help when switching
     await page.keyboard.press('Space');
     await expect(toggle).toHaveAttribute('aria-pressed', 'true');
   }
-  await keyAt(grid, 0, 0).focus();
+  await keyAt(grid, 0, 3).focus();
   await page.keyboard.press('Enter');
-  await expect(keyAt(grid, 0, 0)).toHaveAttribute('aria-pressed', 'false');
+  await expect(keyAt(grid, 0, 3)).toHaveAttribute('aria-pressed', 'false');
 });
 
 test('normal keys are neutral and cursor keys share Space and ENTER special colors', async ({ page }) => {
@@ -247,7 +247,7 @@ test('delete, tab, and layout tap and flick actions remain inspectable', async (
     await expect(actionRow(page, 'bottom').getByRole('cell')).toHaveText(['Hide', 'dismiss_keyboard']);
     await keyAt(grid, 4, 1).click();
     await expect(actionRow(page, 'left').getByRole('cell')).toHaveText(['tab', 'input(text="\\t")']);
-    await keyAt(grid, 0, 3).click();
+    await keyAt(grid, 0, 0).click();
     await expect(actionRow(page, 'bottom')).toHaveCount(0);
     for (const [direction, target] of [['center', 'ja'], ['top', 'num'], ['right', 'eng']]) {
       await expect(actionRow(page, direction).getByRole('cell')).toHaveText([
@@ -322,12 +322,12 @@ for (const width of [320, 390, 768, 1280]) {
       }));
       expect(widths.grid).toBeLessThanOrEqual(widths.available);
       expect(widths.page).toBeLessThanOrEqual(widths.viewport);
-      await keyAt(grid, 0, 0).click();
-      await expect(keyAt(grid, 0, 0)).toHaveAttribute('aria-pressed', 'true');
+      await keyAt(grid, 0, 3).click();
+      await expect(keyAt(grid, 0, 3)).toHaveAttribute('aria-pressed', 'true');
       expect(await grid.boundingBox()).toEqual(before);
       await expectKeyLabelsToFit(grid);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-      await keyAt(grid, 0, 0).click();
+      await keyAt(grid, 0, 3).click();
     }
   });
 }

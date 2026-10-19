@@ -208,16 +208,16 @@ class LayoutTests(unittest.TestCase):
             with self.subTest(layout=name):
                 self.assertEqual(cells, Counter({(x, y): 1 for x in range(5) for y in range(4)}))
 
-    def test_top_left_toggles_the_current_layout_help(self):
+    def test_bottom_left_toggles_the_current_layout_help(self):
         for name, layout in self.layouts.items():
             entries = [entry for entry in layout["interface"]["keys"]
-                       if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 0]
+                       if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 3]
             with self.subTest(layout=name):
                 self.assertEqual(len(entries), 1)
                 self.assertEqual(entries[0], {
                     "key_type": "custom",
                     "specifier_type": "grid_fit",
-                    "specifier": {"x": 0, "y": 0, "width": 1, "height": 1},
+                    "specifier": {"x": 0, "y": 3, "width": 1, "height": 1},
                     "key": {
                         "design": {"color": "special", "label": {"text": "?"}},
                         "press_actions": [{"type": "move_tab", "tab_type": "custom", "identifier": f"{name}-help"}],
@@ -247,14 +247,14 @@ class LayoutTests(unittest.TestCase):
                        if entry["key_type"] == "system"]
         self.assertEqual(system_keys, [{"type": "flick_kogaki"}])
 
-    def test_bottom_left_taps_ja_and_flicks_num_or_eng(self):
+    def test_top_left_taps_ja_and_flicks_num_or_eng(self):
         for name, layout in self.layouts.items():
             entries = [entry for entry in layout["interface"]["keys"]
                        if entry["key_type"] == "custom"
                        and primary_label(entry["key"]) == ("text", "ja")]
             with self.subTest(layout=name):
                 self.assertEqual(len(entries), 1)
-                self.assertEqual(entries[0]["specifier"], {"x": 0, "y": 3, "width": 1, "height": 1})
+                self.assertEqual(entries[0]["specifier"], {"x": 0, "y": 0, "width": 1, "height": 1})
                 self.assertEqual(entries[0]["key"], {
                     "design": {"color": "special", "label": {"text": "ja"}},
                     "press_actions": [{"type": "move_tab", "tab_type": "custom", "identifier": "ja"}],
@@ -436,33 +436,33 @@ class ValidationRegressionTests(unittest.TestCase):
             ("grid_is_full_without_overlaps", "unexpected gap", remove_delete),
             ("grid_is_full_without_overlaps", "missing help toggle",
              lambda layouts: layouts["num"]["interface"]["keys"].pop(0)),
-            ("top_left_toggles_the_current_layout_help", "help opens the wrong layout",
-             lambda layouts: key(layouts, "eng", 0, 0)["press_actions"][0].update(identifier="ja-help")),
-            ("top_left_toggles_the_current_layout_help", "help toggles on hold",
-             lambda layouts: key(layouts, "ja", 0, 0)["longpress_actions"]["start"].append(
+            ("bottom_left_toggles_the_current_layout_help", "help opens the wrong layout",
+             lambda layouts: key(layouts, "eng", 0, 3)["press_actions"][0].update(identifier="ja-help")),
+            ("bottom_left_toggles_the_current_layout_help", "help toggles on hold",
+             lambda layouts: key(layouts, "ja", 0, 3)["longpress_actions"]["start"].append(
                  {"type": "move_tab", "tab_type": "custom", "identifier": "ja-help"})),
-            ("top_left_toggles_the_current_layout_help", "help emits a question mark",
-             lambda layouts: key(layouts, "num", 0, 0).update(press_actions=[{"type": "input", "text": "?"}])),
-            ("bottom_left_taps_ja_and_flicks_num_or_eng", "layout restored to top left",
+            ("bottom_left_toggles_the_current_layout_help", "help emits a question mark",
+             lambda layouts: key(layouts, "num", 0, 3).update(press_actions=[{"type": "input", "text": "?"}])),
+            ("top_left_taps_ja_and_flicks_num_or_eng", "layout restored to bottom left",
              lambda layouts: next(entry for entry in layouts["eng"]["interface"]["keys"]
-                                  if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 3)["specifier"].update(y=0)),
-            ("bottom_left_taps_ja_and_flicks_num_or_eng", "missing Japanese tap",
-             lambda layouts: key(layouts, "eng", 0, 3)["press_actions"].clear()),
-            ("bottom_left_taps_ja_and_flicks_num_or_eng", "wrong Japanese tap target",
-             lambda layouts: key(layouts, "num", 0, 3)["press_actions"][0].update(identifier="eng")),
-            ("bottom_left_taps_ja_and_flicks_num_or_eng", "missing right flick",
-             lambda layouts: key(layouts, "eng", 0, 3)["variations"].pop()),
-            ("bottom_left_taps_ja_and_flicks_num_or_eng", "missing up flick",
-             lambda layouts: key(layouts, "num", 0, 3)["variations"].pop(0)),
-            ("bottom_left_taps_ja_and_flicks_num_or_eng", "layout-dependent flick target",
-             lambda layouts: key(layouts, "ja", 0, 3)["variations"][0]["key"]["press_actions"][0].update(identifier="eng")),
-            ("bottom_left_taps_ja_and_flicks_num_or_eng", "retired emoji tap",
-             lambda layouts: key(layouts, "eng", 0, 3)["press_actions"].append(
+                                  if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 0)["specifier"].update(y=3)),
+            ("top_left_taps_ja_and_flicks_num_or_eng", "missing Japanese tap",
+             lambda layouts: key(layouts, "eng", 0, 0)["press_actions"].clear()),
+            ("top_left_taps_ja_and_flicks_num_or_eng", "wrong Japanese tap target",
+             lambda layouts: key(layouts, "num", 0, 0)["press_actions"][0].update(identifier="eng")),
+            ("top_left_taps_ja_and_flicks_num_or_eng", "missing right flick",
+             lambda layouts: key(layouts, "eng", 0, 0)["variations"].pop()),
+            ("top_left_taps_ja_and_flicks_num_or_eng", "missing up flick",
+             lambda layouts: key(layouts, "num", 0, 0)["variations"].pop(0)),
+            ("top_left_taps_ja_and_flicks_num_or_eng", "layout-dependent flick target",
+             lambda layouts: key(layouts, "ja", 0, 0)["variations"][0]["key"]["press_actions"][0].update(identifier="eng")),
+            ("top_left_taps_ja_and_flicks_num_or_eng", "retired emoji tap",
+             lambda layouts: key(layouts, "eng", 0, 0)["press_actions"].append(
                  {"type": "move_tab", "tab_type": "system", "identifier": "emoji_tab"})),
-            ("bottom_left_taps_ja_and_flicks_num_or_eng", "retired emoji label",
-             lambda layouts: key(layouts, "ja", 0, 3)["design"]["label"].update(text="Emoji")),
+            ("top_left_taps_ja_and_flicks_num_or_eng", "retired emoji label",
+             lambda layouts: key(layouts, "ja", 0, 0)["design"]["label"].update(text="Emoji")),
             ("layout_set_and_supported_format", "retired emoji flick",
-             lambda layouts: key(layouts, "num", 0, 3)["variations"][0]["key"]["press_actions"][0].update(
+             lambda layouts: key(layouts, "num", 0, 0)["variations"][0]["key"]["press_actions"][0].update(
                  tab_type="system", identifier="emoji_tab")),
             ("layout_set_and_supported_format", "empty character key",
              lambda layouts: key(layouts, "eng", 1, 0).update(press_actions=[], variations=[])),
@@ -534,7 +534,7 @@ class ValidationRegressionTests(unittest.TestCase):
             ("layout_set_and_supported_format", "unsupported action",
              lambda layouts: key(layouts, "eng", 1, 0)["press_actions"][0].update(type="inptu")),
             ("layout_set_and_supported_format", "retired resize action",
-             lambda layouts: key(layouts, "eng", 0, 3)["press_actions"].append(
+             lambda layouts: key(layouts, "eng", 0, 0)["press_actions"].append(
                  {"type": "enable_resizing_mode"})),
             ("fullwidth_forms_and_wide_punctuation_are_absent", "fullwidth digit input",
              lambda layouts: key(layouts, "num", 1, 0)["press_actions"][0].update(text="\uff11")),
@@ -572,13 +572,13 @@ class ValidationRegressionTests(unittest.TestCase):
              lambda layouts: key(layouts, "num", 4, 2)["variations"][0]["key"].update(
                  press_actions=[{"type": "complete"}])),
             ("tab_links_are_complete_valid_and_labelled", "obsolete words tab",
-             lambda layouts: key(layouts, "eng", 0, 3)["variations"][0]["key"]["press_actions"][0].update(identifier="words")),
+             lambda layouts: key(layouts, "eng", 0, 0)["variations"][0]["key"]["press_actions"][0].update(identifier="words")),
             ("tab_links_are_complete_valid_and_labelled", "obsolete English tab link",
-             lambda layouts: key(layouts, "num", 0, 3)["variations"][1]["key"]["press_actions"][0].update(identifier="abc")),
+             lambda layouts: key(layouts, "num", 0, 0)["variations"][1]["key"]["press_actions"][0].update(identifier="abc")),
             ("tab_links_are_complete_valid_and_labelled", "obsolete Japanese tab link",
-             lambda layouts: key(layouts, "eng", 0, 3)["press_actions"][0].update(identifier="kana")),
+             lambda layouts: key(layouts, "eng", 0, 0)["press_actions"][0].update(identifier="kana")),
             ("tab_links_are_complete_valid_and_labelled", "missing current layout shortcut",
-             lambda layouts: key(layouts, "num", 0, 3)["variations"].pop(0)),
+             lambda layouts: key(layouts, "num", 0, 0)["variations"].pop(0)),
             ("all_longpress_actions_are_disabled", "obsolete longpress timing",
              lambda layouts: key(layouts, "eng", 1, 0)["longpress_actions"].update(duration="light")),
             ("layout_set_and_supported_format", "longpress variation",

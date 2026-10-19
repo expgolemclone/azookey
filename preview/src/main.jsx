@@ -14,7 +14,7 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { actionsText, createHelpLayout, helpIdentifier, keyLabel, keyVariants, labelText } from './layout.js';
+import { actionsText, createHelpLayout, helpIdentifier, isHelpToggle, keyLabel, keyVariants, labelText } from './layout.js';
 import classes from './main.module.css';
 
 const layouts = Object.values(import.meta.glob('../../*.json', {
@@ -63,7 +63,7 @@ function App() {
         >
           {keys.map((entry) => {
             const { x, y, width, height } = entry.specifier;
-            const isHelpToggle = x === 0 && y === 0;
+            const isToggle = isHelpToggle(entry, layout.identifier);
             const hints = entry.key_type === 'custom' && entry.key.design.label.type === 'main_and_directions'
               ? entry.key.design.label.directions
               : null;
@@ -80,10 +80,10 @@ function App() {
                   gridRow: `${y + 1} / span ${height}`,
                 }}
                 aria-label={`${keyLabel(entry)}, x=${x}, y=${y}`}
-                aria-pressed={isHelpToggle ? showHelp : selectedKey === entry}
-                aria-controls={isHelpToggle ? 'keyboard-layout' : 'key-details'}
+                aria-pressed={isToggle ? showHelp : selectedKey === entry}
+                aria-controls={isToggle ? 'keyboard-layout' : 'key-details'}
                 onClick={() => {
-                  if (isHelpToggle) {
+                  if (isToggle) {
                     setShowHelp(!showHelp);
                     setSelectedKey(null);
                   } else {

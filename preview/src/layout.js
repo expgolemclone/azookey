@@ -52,13 +52,20 @@ export function keyVariants(entry) {
 
 export const helpIdentifier = (identifier) => `${identifier}-help`;
 
+export function isHelpToggle(entry, identifier) {
+  const target = identifier.endsWith('-help') ? identifier.slice(0, -5) : helpIdentifier(identifier);
+  return entry.key_type === 'custom' && entry.key.press_actions.some((action) => (
+    action.type === 'move_tab' && action.tab_type === 'custom' && action.identifier === target
+  ));
+}
+
 export function createHelpLayout(layout) {
   const help = structuredClone(layout);
   help.identifier = helpIdentifier(layout.identifier);
   help.metadata.display_name = help.identifier;
   for (const entry of help.interface.keys) {
     if (entry.key_type === 'system') continue;
-    if (entry.specifier.x === 0 && entry.specifier.y === 0) {
+    if (isHelpToggle(entry, layout.identifier)) {
       entry.key.press_actions[0].identifier = layout.identifier;
       continue;
     }

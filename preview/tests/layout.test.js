@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { actionsText, createHelpLayout, keyLabel, keyVariants, labelText } from '../src/layout.js';
+import { actionsText, createHelpLayout, isHelpToggle, keyLabel, keyVariants, labelText } from '../src/layout.js';
 
 const files = readdirSync(new URL('../../', import.meta.url))
   .filter((name) => name.endsWith('.json'))
@@ -32,10 +32,10 @@ test('uses every repository layout without copying its data', () => {
   }
 });
 
-test('the lower-left layout key taps ja and flicks num or eng', () => {
+test('the upper-left layout key taps ja and flicks num or eng', () => {
   for (const name of Object.keys(layouts)) {
-    assert.equal(keyLabel(entryAt(name, 0, 0)), '?');
-    const menu = entryAt(name, 0, 3);
+    assert.equal(keyLabel(entryAt(name, 0, 3)), '?');
+    const menu = entryAt(name, 0, 0);
     assert.equal(keyLabel(menu), 'ja');
     assert.deepEqual(menu.key.design.label, { text: 'ja' });
     assert.deepEqual(keyVariants(menu).map(({ direction, key }) => [
@@ -137,7 +137,7 @@ test('help layouts derive every hint from the flick label without changing typin
         assert.deepEqual(actual, entry);
         continue;
       }
-      const isToggle = entry.specifier.x === 0 && entry.specifier.y === 0;
+      const isToggle = entry.specifier.x === 0 && entry.specifier.y === 3;
       const expected = structuredClone(entry);
       for (const { key } of keyVariants(expected)) {
         for (const action of key.press_actions) {
@@ -166,7 +166,7 @@ test('help toggles round-trip to the current layout and tab switches retain help
   const identifiers = new Set(all.map((layout) => layout.identifier));
   assert.equal(identifiers.size, 6);
   for (const layout of all) {
-    const toggle = layout.interface.keys.find((entry) => entry.specifier.x === 0 && entry.specifier.y === 0);
+    const toggle = layout.interface.keys.find((entry) => entry.specifier.x === 0 && entry.specifier.y === 3);
     assert.deepEqual(toggle.key.press_actions, [{
       identifier: layout.identifier.endsWith('-help')
         ? layout.identifier.slice(0, -5) : `${layout.identifier}-help`,
@@ -175,6 +175,7 @@ test('help toggles round-trip to the current layout and tab switches retain help
     }]);
     assert.deepEqual(toggle.key.variations, []);
     for (const entry of layout.interface.keys) {
+      assert.equal(isHelpToggle(entry, layout.identifier), entry === toggle);
       for (const { key } of keyVariants(entry)) {
         for (const action of key.press_actions) {
           if (action.type !== 'move_tab' || action.tab_type !== 'custom') continue;
@@ -184,6 +185,25 @@ test('help toggles round-trip to the current layout and tab switches retain help
           }
         }
       }
+    }
+  }
+});
+
+test('help toggles follow their tab action instead of a fixed grid position', () => {
+  for (const layout of Object.values(layouts)) {
+    const moved = structuredClone(layout);
+    const toggle = moved.interface.keys.find((entry) => isHelpToggle(entry, moved.identifier));
+    const other = moved.interface.keys.find((entry) => entry.specifier.x === 2 && entry.specifier.y === 1);
+    [toggle.specifier, other.specifier] = [other.specifier, toggle.specifier];
+    for (const current of [moved, createHelpLayout(moved)]) {
+      const toggles = current.interface.keys.filter((entry) => isHelpToggle(entry, current.identifier));
+      assert.equal(toggles.length, 1);
+      assert.deepEqual(toggles[0].specifier, { x: 2, y: 1, width: 1, height: 1 });
+      assert.deepEqual(toggles[0].key.press_actions, [{
+        identifier: current.identifier === moved.identifier ? `${moved.identifier}-help` : moved.identifier,
+        tab_type: 'custom',
+        type: 'move_tab',
+      }]);
     }
   }
 });
