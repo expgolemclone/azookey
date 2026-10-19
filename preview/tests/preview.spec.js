@@ -95,7 +95,7 @@ test('preview controls use English while kana labels and actions stay Japanese',
   await expect(page.getByRole('table')).toHaveCount(0);
   await expect(page.getByText('Read-only', { exact: true })).toHaveCount(0);
   const grid = await selectLayout(page, 'ja');
-  for (const label of ['Layout', 'Space', 'ENTER', 'Delete', 'Small/Voiced', 'あ']) {
+  for (const label of ['ja', 'Space', 'ENTER', 'Delete', 'Small/Voiced', 'あ']) {
     await expect(grid.getByRole('button', { name: `${label}, x=`, exact: false })).toHaveText(label);
   }
   await keyAt(grid, 4, 1).click();
@@ -118,7 +118,7 @@ for (const [name, layout] of Object.entries(layouts)) {
     expect((await grid.textContent()).replace(/\s/g, '')).toBe(ordered.map(keyLabel).join('').replace(/\s/g, ''));
     await expect(page.getByRole('table')).toHaveCount(0);
     await expect(keyAt(grid, 0, 0)).toHaveCount(0);
-    await expect(keyAt(grid, 0, 3)).toHaveText('Layout');
+    await expect(keyAt(grid, 0, 3)).toHaveText('ja');
     await expectKeyLabelsToFit(grid);
     const origin = await grid.boundingBox();
     const cell = await keyAt(grid, 1, 0).boundingBox();
@@ -193,7 +193,7 @@ test('normal keys are neutral and cursor keys share Space and ENTER special colo
   }
 });
 
-test('delete, tab, layout links, and disabled menu taps remain inspectable', async ({ page }) => {
+test('delete, tab, and layout tap and flick actions remain inspectable', async ({ page }) => {
   await page.goto('/');
   for (const name of Object.keys(layouts)) {
     const grid = await selectLayout(page, name);
@@ -204,8 +204,8 @@ test('delete, tab, layout links, and disabled menu taps remain inspectable', asy
     await keyAt(grid, 4, 1).click();
     await expect(actionRow(page, 'left').getByRole('cell')).toHaveText(['tab', 'input(text="\\t")']);
     await keyAt(grid, 0, 3).click();
-    await expect(actionRow(page, 'center').getByRole('cell')).toHaveText(['Layout', 'None']);
-    for (const [direction, target] of [['top', 'num'], ['right', 'eng'], ['bottom', 'ja']]) {
+    await expect(actionRow(page, 'bottom')).toHaveCount(0);
+    for (const [direction, target] of [['center', 'ja'], ['top', 'num'], ['right', 'eng']]) {
       await expect(actionRow(page, direction).getByRole('cell')).toHaveText([
         target, `move_tab(identifier="${target}", tab_type="custom")`,
       ]);

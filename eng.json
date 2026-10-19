@@ -14,14 +14,20 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "Layout"
+              "text": "ja"
             }
           },
           "longpress_actions": {
             "repeat": [],
             "start": []
           },
-          "press_actions": [],
+          "press_actions": [
+            {
+              "identifier": "ja",
+              "tab_type": "custom",
+              "type": "move_tab"
+            }
+          ],
           "variations": [
             {
               "direction": "top",
@@ -60,28 +66,6 @@
                 "press_actions": [
                   {
                     "identifier": "eng",
-                    "tab_type": "custom",
-                    "type": "move_tab"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "bottom",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "ja"
-                  }
-                },
-                "longpress_actions": {
-                  "repeat": [],
-                  "start": []
-                },
-                "press_actions": [
-                  {
-                    "identifier": "ja",
                     "tab_type": "custom",
                     "type": "move_tab"
                   }

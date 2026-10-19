@@ -28,19 +28,18 @@ test('uses every repository layout without copying its data', () => {
   }
 });
 
-test('Layout occupies the lower-left cell and retains all three flick targets', () => {
+test('the lower-left layout key taps ja and flicks num or eng', () => {
   for (const name of Object.keys(layouts)) {
     assert.equal(entryAt(name, 0, 0), undefined);
     const menu = entryAt(name, 0, 3);
-    assert.equal(keyLabel(menu), 'Layout');
-    assert.deepEqual(menu.key.design.label, { text: 'Layout' });
-    assert.deepEqual(menu.key.press_actions, []);
-    assert.deepEqual(keyVariants(menu).slice(1).map(({ direction, key }) => [
+    assert.equal(keyLabel(menu), 'ja');
+    assert.deepEqual(menu.key.design.label, { text: 'ja' });
+    assert.deepEqual(keyVariants(menu).map(({ direction, key }) => [
       direction, labelText(key.design.label), key.press_actions,
     ]), [
+      ['center', 'ja', [{ identifier: 'ja', tab_type: 'custom', type: 'move_tab' }]],
       ['top', 'num', [{ identifier: 'num', tab_type: 'custom', type: 'move_tab' }]],
       ['right', 'eng', [{ identifier: 'eng', tab_type: 'custom', type: 'move_tab' }]],
-      ['bottom', 'ja', [{ identifier: 'ja', tab_type: 'custom', type: 'move_tab' }]],
     ]);
   }
 });
