@@ -8,16 +8,17 @@ export const directions = [
 const symbolLabels = {
   'chevron.left': '←',
   'chevron.right': '→',
-  'chevron.left.2': 'Line start',
-  'chevron.right.2': 'Line end',
-  'delete.left': 'Delete',
-  'delete.left.fill': 'Smart delete',
+  'chevron.left.2': '⇤',
+  'chevron.right.2': '⇥',
+  'delete.left': '⌫',
+  'delete.left.fill': 'Clear',
   'doc.on.clipboard': 'Paste',
   'keyboard.chevron.compact.down.fill': 'Hide',
   'list.bullet.clipboard': 'History',
 };
 
 export function labelText(label) {
+  if (label.type === 'main_and_directions') return label.main;
   if (Object.hasOwn(label, 'text')) return label.text;
   if (Object.hasOwn(label, 'system_image')) {
     if (!Object.hasOwn(symbolLabels, label.system_image)) {
@@ -47,6 +48,38 @@ export function keyVariants(entry) {
       return variation ? [{ direction: value, label, key: variation.key }] : [];
     }),
   ];
+}
+
+export const helpIdentifier = (identifier) => `${identifier}-help`;
+
+export function createHelpLayout(layout) {
+  const help = structuredClone(layout);
+  help.identifier = helpIdentifier(layout.identifier);
+  help.metadata.display_name = help.identifier;
+  for (const entry of help.interface.keys) {
+    if (entry.key_type === 'system') continue;
+    if (entry.specifier.x === 0 && entry.specifier.y === 0) {
+      entry.key.press_actions[0].identifier = layout.identifier;
+      continue;
+    }
+    for (const { key } of keyVariants(entry)) {
+      for (const action of key.press_actions) {
+        if (action.type === 'move_tab' && action.tab_type === 'custom') {
+          action.identifier = helpIdentifier(action.identifier);
+        }
+      }
+    }
+    if (entry.key.variations.length > 0) {
+      entry.key.design.label = {
+        type: 'main_and_directions',
+        main: keyLabel(entry),
+        directions: Object.fromEntries(entry.key.variations.map(({ direction, key }) => [
+          direction, labelText(key.design.label),
+        ])),
+      };
+    }
+  }
+  return help;
 }
 
 export function actionsText(actions) {

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test as base } from '@playwright/test';
-import { actionsText, keyLabel, keyVariants, labelText } from '../src/layout.js';
+import { actionsText, createHelpLayout, keyLabel, keyVariants, labelText } from '../src/layout.js';
 
 const layouts = Object.fromEntries(['eng', 'ja', 'num'].map((name) => [
   name, JSON.parse(readFileSync(new URL(`../../${name}.json`, import.meta.url), 'utf8')),
@@ -91,11 +91,11 @@ test('preview controls use English while kana labels and actions stay Japanese',
   await expect(page).toHaveTitle('azooKey Keyboard Preview');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.getByRole('heading', { name: 'Keyboard preview', exact: true })).toBeVisible();
-  await expect(page.getByText('Select a key to inspect its flicks. Device appearance may differ.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Tap ? to toggle flick hints. Select another key to inspect its actions. Device appearance may differ.', { exact: true })).toBeVisible();
   await expect(page.getByRole('table')).toHaveCount(0);
   await expect(page.getByText('Read-only', { exact: true })).toHaveCount(0);
   const grid = await selectLayout(page, 'ja');
-  for (const label of ['ja', 'Space', 'ENTER', 'Delete', 'Small/Voiced', 'あ']) {
+  for (const label of ['ja', 'Space', 'ENTER', '⌫', 'Small/Voiced', 'あ']) {
     await expect(grid.getByRole('button', { name: `${label}, x=`, exact: false })).toHaveText(label);
   }
   await keyAt(grid, 4, 1).click();
@@ -117,14 +117,14 @@ for (const [name, layout] of Object.entries(layouts)) {
     await expect(grid.getByRole('button')).toHaveText(ordered.map(keyLabel));
     expect((await grid.textContent()).replace(/\s/g, '')).toBe(ordered.map(keyLabel).join('').replace(/\s/g, ''));
     await expect(page.getByRole('table')).toHaveCount(0);
-    await expect(keyAt(grid, 0, 0)).toHaveCount(0);
+    await expect(keyAt(grid, 0, 0)).toHaveText('?');
     await expect(keyAt(grid, 0, 3)).toHaveText('ja');
     await expectKeyLabelsToFit(grid);
     const origin = await grid.boundingBox();
     const cell = await keyAt(grid, 1, 0).boundingBox();
     const gap = await grid.evaluate((element) => parseFloat(getComputedStyle(element).gap));
 
-    for (const entry of ordered) {
+    for (const entry of ordered.filter((item) => item.specifier.x !== 0 || item.specifier.y !== 0)) {
       const { x, y, width, height } = entry.specifier;
       const button = keyAt(grid, x, y);
       await expect(button).toHaveAccessibleName(`${keyLabel(entry)}, x=${x}, y=${y}`);
@@ -167,6 +167,50 @@ for (const [name, layout] of Object.entries(layouts)) {
   });
 }
 
+test('the top-left tap toggles all flick hints and preserves help when switching layouts', async ({ page }) => {
+  await page.goto('/');
+  let grid = await selectLayout(page, 'ja');
+  const before = await grid.boundingBox();
+  await keyAt(grid, 1, 0).click();
+  await keyAt(grid, 0, 0).click();
+  await expect(page.getByRole('table')).toHaveCount(0);
+  expect(await grid.boundingBox()).toEqual(before);
+  for (const [name, layout] of Object.entries(layouts)) {
+    grid = await selectLayout(page, name);
+    const toggle = keyAt(grid, 0, 0);
+    await expect(toggle).toHaveText('?');
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    await expect(toggle).toHaveAttribute('aria-controls', 'keyboard-layout');
+    const help = createHelpLayout(layout);
+    for (const entry of help.interface.keys) {
+      const button = keyAt(grid, entry.specifier.x, entry.specifier.y);
+      const hints = entry.key_type === 'custom' && entry.key.design.label.type === 'main_and_directions'
+        ? entry.key.design.label.directions : {};
+      await expect(button.locator('[data-direction]')).toHaveCount(Object.keys(hints).length);
+      for (const [direction, text] of Object.entries(hints)) {
+        await expect(button.locator(`[data-direction="${direction}"]`)).toHaveText(text);
+      }
+    }
+    await expectKeyLabelsToFit(grid);
+    await keyAt(grid, 0, 3).click();
+    for (const [direction, target] of [['center', 'ja'], ['top', 'num'], ['right', 'eng']]) {
+      await expect(actionRow(page, direction).getByRole('cell')).toHaveText([
+        target, `move_tab(identifier="${target}-help", tab_type="custom")`,
+      ]);
+    }
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    await expect(grid.locator('[data-direction]')).toHaveCount(0);
+    await expect(page.getByRole('table')).toHaveCount(0);
+    await toggle.focus();
+    await page.keyboard.press('Space');
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  }
+  await keyAt(grid, 0, 0).focus();
+  await page.keyboard.press('Enter');
+  await expect(keyAt(grid, 0, 0)).toHaveAttribute('aria-pressed', 'false');
+});
+
 test('normal keys are neutral and cursor keys share Space and ENTER special colors', async ({ page }) => {
   await page.goto('/');
   for (const name of Object.keys(layouts)) {
@@ -199,7 +243,7 @@ test('delete, tab, and layout tap and flick actions remain inspectable', async (
     const grid = await selectLayout(page, name);
     await keyAt(grid, 4, 0).click();
     await expect(actionRow(page, 'top')).toHaveCount(0);
-    await expect(actionRow(page, 'left').getByRole('cell')).toHaveText(['Smart delete', 'smart_delete_default']);
+    await expect(actionRow(page, 'left').getByRole('cell')).toHaveText(['Clear', 'smart_delete_default']);
     await expect(actionRow(page, 'bottom').getByRole('cell')).toHaveText(['Hide', 'dismiss_keyboard']);
     await keyAt(grid, 4, 1).click();
     await expect(actionRow(page, 'left').getByRole('cell')).toHaveText(['tab', 'input(text="\\t")']);
@@ -278,6 +322,12 @@ for (const width of [320, 390, 768, 1280]) {
       }));
       expect(widths.grid).toBeLessThanOrEqual(widths.available);
       expect(widths.page).toBeLessThanOrEqual(widths.viewport);
+      await keyAt(grid, 0, 0).click();
+      await expect(keyAt(grid, 0, 0)).toHaveAttribute('aria-pressed', 'true');
+      expect(await grid.boundingBox()).toEqual(before);
+      await expectKeyLabelsToFit(grid);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+      await keyAt(grid, 0, 0).click();
     }
   });
 }

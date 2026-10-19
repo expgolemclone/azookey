@@ -14,18 +14,22 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { actionsText, keyLabel, keyVariants, labelText } from './layout.js';
+import { actionsText, createHelpLayout, helpIdentifier, keyLabel, keyVariants, labelText } from './layout.js';
 import classes from './main.module.css';
 
 const layouts = Object.values(import.meta.glob('../../*.json', {
   eager: true,
   import: 'default',
 })).toSorted((left, right) => left.identifier.localeCompare(right.identifier));
+const helpLayouts = layouts.map(createHelpLayout);
 
 function App() {
   const [activeId, setActiveId] = useState('ja');
+  const [showHelp, setShowHelp] = useState(false);
   const [selectedKey, setSelectedKey] = useState(null);
-  const layout = layouts.find((item) => item.identifier === activeId);
+  const layout = showHelp
+    ? helpLayouts.find((item) => item.identifier === helpIdentifier(activeId))
+    : layouts.find((item) => item.identifier === activeId);
   const { row_count: width, column_count: height } = layout.interface.key_layout;
   const keys = layout.interface.keys.toSorted((a, b) => a.specifier.y - b.specifier.y || a.specifier.x - b.specifier.x);
 
@@ -48,9 +52,10 @@ function App() {
           />
         </Group>
         <Text size="sm" c="gray.5">
-          Select a key to inspect its flicks. Device appearance may differ.
+          Tap ? to toggle flick hints. Select another key to inspect its actions. Device appearance may differ.
         </Text>
         <Box
+          id="keyboard-layout"
           role="group"
           aria-label={`${activeId} key layout`}
           className={classes.keyboard}
@@ -58,23 +63,40 @@ function App() {
         >
           {keys.map((entry) => {
             const { x, y, width, height } = entry.specifier;
+            const isHelpToggle = x === 0 && y === 0;
+            const hints = entry.key_type === 'custom' && entry.key.design.label.type === 'main_and_directions'
+              ? entry.key.design.label.directions
+              : null;
             return (
               <UnstyledButton
                 key={`${x},${y}`}
                 type="button"
                 className={classes.key}
                 data-key-position={`${x},${y}`}
+                data-hints={hints ? true : undefined}
                 data-special={entry.key_type === 'system' || entry.key.design.color === 'special' || undefined}
                 style={{
                   gridColumn: `${x + 1} / span ${width}`,
                   gridRow: `${y + 1} / span ${height}`,
                 }}
                 aria-label={`${keyLabel(entry)}, x=${x}, y=${y}`}
-                aria-pressed={selectedKey === entry}
-                aria-controls="key-details"
-                onClick={() => setSelectedKey(entry)}
+                aria-pressed={isHelpToggle ? showHelp : selectedKey === entry}
+                aria-controls={isHelpToggle ? 'keyboard-layout' : 'key-details'}
+                onClick={() => {
+                  if (isHelpToggle) {
+                    setShowHelp(!showHelp);
+                    setSelectedKey(null);
+                  } else {
+                    setSelectedKey(entry);
+                  }
+                }}
               >
                 <Text component="span" inherit className={classes.keyLabel}>{keyLabel(entry)}</Text>
+                {hints && Object.entries(hints).map(([direction, text]) => (
+                  <span key={direction} className={classes.hint} data-direction={direction} aria-hidden="true">
+                    {text}
+                  </span>
+                ))}
               </UnstyledButton>
             );
           })}

@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { actionsText, keyLabel, keyVariants, labelText } from '../src/layout.js';
+import { strFromU8, unzipSync } from 'fflate';
+import { actionsText, createHelpLayout, keyLabel, keyVariants, labelText } from '../src/layout.js';
 
 const files = readdirSync(new URL('../../', import.meta.url))
   .filter((name) => name.endsWith('.json'))
@@ -30,7 +35,7 @@ test('uses every repository layout without copying its data', () => {
 
 test('the lower-left layout key taps ja and flicks num or eng', () => {
   for (const name of Object.keys(layouts)) {
-    assert.equal(entryAt(name, 0, 0), undefined);
+    assert.equal(keyLabel(entryAt(name, 0, 0)), '?');
     const menu = entryAt(name, 0, 3);
     assert.equal(keyLabel(menu), 'ja');
     assert.deepEqual(menu.key.design.label, { text: 'ja' });
@@ -84,10 +89,10 @@ test('SF Symbols and directions have English labels', () => {
   for (const [system_image, expected] of Object.entries({
     'chevron.left': '←',
     'chevron.right': '→',
-    'chevron.left.2': 'Line start',
-    'chevron.right.2': 'Line end',
-    'delete.left': 'Delete',
-    'delete.left.fill': 'Smart delete',
+    'chevron.left.2': '⇤',
+    'chevron.right.2': '⇥',
+    'delete.left': '⌫',
+    'delete.left.fill': 'Clear',
     'doc.on.clipboard': 'Paste',
     'keyboard.chevron.compact.down.fill': 'Hide',
     'list.bullet.clipboard': 'History',
@@ -99,7 +104,7 @@ test('SF Symbols and directions have English labels', () => {
   assert.throws(() => labelText({ system_image: 'unknown.symbol' }), /Unsupported system image/);
   assert.throws(() => labelText({ unknown: 'label' }), /Unsupported label/);
   assert.throws(() => keyLabel({ key_type: 'system', key: { type: 'unknown' } }), /Unsupported system key/);
-  assert.throws(() => labelText({ type: 'main_and_directions', main: 'r', directions: { top: 'really' } }), /Unsupported label/);
+  assert.equal(labelText({ type: 'main_and_directions', main: 'r', directions: { top: 'really' } }), 'r');
 });
 
 test('all center and flick keys disable long-press without timing overrides', () => {
@@ -110,6 +115,93 @@ test('all center and flick keys disable long-press without timing overrides', ()
           `${name}: ${keyLabel(entry)} ${direction}`);
       }
     }
+  }
+});
+
+test('help layouts derive every hint from the flick label without changing typing behavior', () => {
+  for (const layout of Object.values(layouts)) {
+    const before = structuredClone(layout);
+    const help = createHelpLayout(layout);
+    assert.equal(help.identifier, `${layout.identifier}-help`);
+    assert.deepEqual(help.metadata, { ...layout.metadata, display_name: help.identifier });
+    assert.deepEqual(help.interface.key_layout, layout.interface.key_layout);
+    assert.equal(help.interface.key_style, layout.interface.key_style);
+    assert.equal(help.input_style, layout.input_style);
+    assert.equal(help.language, layout.language);
+    assert.equal(help.interface.keys.length, layout.interface.keys.length);
+    for (const [index, entry] of layout.interface.keys.entries()) {
+      const actual = help.interface.keys[index];
+      assert.deepEqual(actual.specifier, entry.specifier);
+      assert.equal(actual.specifier_type, entry.specifier_type);
+      assert.equal(actual.key_type, entry.key_type);
+      if (entry.key_type === 'system') {
+        assert.deepEqual(actual, entry);
+        continue;
+      }
+      const isToggle = entry.specifier.x === 0 && entry.specifier.y === 0;
+      const expected = structuredClone(entry);
+      for (const { key } of keyVariants(expected)) {
+        for (const action of key.press_actions) {
+          if (action.type === 'move_tab' && action.tab_type === 'custom') {
+            action.identifier = isToggle ? layout.identifier : `${action.identifier}-help`;
+          }
+        }
+      }
+      if (entry.key.variations.length > 0) {
+        expected.key.design.label = {
+          type: 'main_and_directions',
+          main: keyLabel(entry),
+          directions: Object.fromEntries(entry.key.variations.map(({ direction, key }) => [
+            direction, labelText(key.design.label),
+          ])),
+        };
+      }
+      assert.deepEqual(actual, expected);
+    }
+    assert.deepEqual(layout, before);
+  }
+});
+
+test('help toggles round-trip to the current layout and tab switches retain help mode', () => {
+  const all = Object.values(layouts).flatMap((layout) => [layout, createHelpLayout(layout)]);
+  const identifiers = new Set(all.map((layout) => layout.identifier));
+  assert.equal(identifiers.size, 6);
+  for (const layout of all) {
+    const toggle = layout.interface.keys.find((entry) => entry.specifier.x === 0 && entry.specifier.y === 0);
+    assert.deepEqual(toggle.key.press_actions, [{
+      identifier: layout.identifier.endsWith('-help')
+        ? layout.identifier.slice(0, -5) : `${layout.identifier}-help`,
+      tab_type: 'custom',
+      type: 'move_tab',
+    }]);
+    assert.deepEqual(toggle.key.variations, []);
+    for (const entry of layout.interface.keys) {
+      for (const { key } of keyVariants(entry)) {
+        for (const action of key.press_actions) {
+          if (action.type !== 'move_tab' || action.tab_type !== 'custom') continue;
+          assert.ok(identifiers.has(action.identifier));
+          if (entry !== toggle) {
+            assert.equal(action.identifier.endsWith('-help'), layout.identifier.endsWith('-help'));
+          }
+        }
+      }
+    }
+  }
+});
+
+test('the import ZIP contains exactly all six generated JSON layouts', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'azookey-export-'));
+  try {
+    const output = join(directory, 'layouts.zip');
+    execFileSync(process.execPath, [fileURLToPath(new URL('../scripts/export-layouts.js', import.meta.url)), output]);
+    const files = unzipSync(readFileSync(output));
+    const expected = Object.values(layouts).flatMap((layout) => [layout, createHelpLayout(layout)]);
+    assert.deepEqual(Object.keys(files).toSorted(), expected.map((layout) => `${layout.identifier}.json`).toSorted());
+    for (const layout of expected) {
+      assert.deepEqual(JSON.parse(strFromU8(files[`${layout.identifier}.json`])), layout);
+    }
+  } finally {
+    rmSync(directory, { recursive: true });
   }
 });
 

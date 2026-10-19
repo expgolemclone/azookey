@@ -14,6 +14,36 @@
           "design": {
             "color": "special",
             "label": {
+              "text": "?"
+            }
+          },
+          "longpress_actions": {
+            "repeat": [],
+            "start": []
+          },
+          "press_actions": [
+            {
+              "identifier": "eng-help",
+              "tab_type": "custom",
+              "type": "move_tab"
+            }
+          ],
+          "variations": []
+        },
+        "key_type": "custom",
+        "specifier": {
+          "height": 1,
+          "width": 1,
+          "x": 0,
+          "y": 0
+        },
+        "specifier_type": "grid_fit"
+      },
+      {
+        "key": {
+          "design": {
+            "color": "special",
+            "label": {
               "text": "ja"
             }
           },

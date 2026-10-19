@@ -123,7 +123,7 @@ class LayoutTests(unittest.TestCase):
                 self.assertNotEqual(action["count"], 0)
             elif action["type"] == "move_tab":
                 self.assertIn(action["tab_type"], {"custom", "system"})
-                targets = self.layouts if action["tab_type"] == "custom" else {
+                targets = {*self.layouts, *(f"{name}-help" for name in self.layouts)} if action["tab_type"] == "custom" else {
                     "clipboard_history_tab",
                 }
                 self.assertIn(action["identifier"], targets)
@@ -190,7 +190,7 @@ class LayoutTests(unittest.TestCase):
                     else:
                         self.assert_key_contract(entry["key"])
 
-    def test_grid_keeps_only_top_left_empty_without_overlaps(self):
+    def test_grid_is_full_without_overlaps(self):
         for name, layout in self.layouts.items():
             cells = Counter()
             for entry in layout["interface"]["keys"]:
@@ -206,8 +206,25 @@ class LayoutTests(unittest.TestCase):
                                  for x in range(position["x"], position["x"] + position["width"])
                                  for y in range(position["y"], position["y"] + position["height"]))
             with self.subTest(layout=name):
-                self.assertEqual(cells, Counter({(x, y): 1 for x in range(5) for y in range(4)
-                                                 if (x, y) != (0, 0)}))
+                self.assertEqual(cells, Counter({(x, y): 1 for x in range(5) for y in range(4)}))
+
+    def test_top_left_toggles_the_current_layout_help(self):
+        for name, layout in self.layouts.items():
+            entries = [entry for entry in layout["interface"]["keys"]
+                       if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 0]
+            with self.subTest(layout=name):
+                self.assertEqual(len(entries), 1)
+                self.assertEqual(entries[0], {
+                    "key_type": "custom",
+                    "specifier_type": "grid_fit",
+                    "specifier": {"x": 0, "y": 0, "width": 1, "height": 1},
+                    "key": {
+                        "design": {"color": "special", "label": {"text": "?"}},
+                        "press_actions": [{"type": "move_tab", "tab_type": "custom", "identifier": f"{name}-help"}],
+                        "longpress_actions": {"start": [], "repeat": []},
+                        "variations": [],
+                    },
+                })
 
     def test_shared_controls_are_present_correct_and_consistent(self):
         for label, actions in CONTROL_ACTIONS.items():
@@ -292,11 +309,12 @@ class LayoutTests(unittest.TestCase):
                 for action in key["press_actions"]:
                     if action["type"] == "move_tab" and action["tab_type"] == "custom":
                         with self.subTest(layout=name, target=action["identifier"]):
-                            self.assertIn(action["identifier"], self.layouts)
-                            self.assertEqual(primary_label(key), ("text", action["identifier"]))
-                            targets[action["identifier"]] += 1
+                            target = action["identifier"]
+                            self.assertIn(target, {*self.layouts, f"{name}-help"})
+                            self.assertEqual(primary_label(key), ("text", "?" if target == f"{name}-help" else target))
+                            targets[target] += 1
             with self.subTest(layout=name):
-                self.assertEqual(targets, Counter({target: 1 for target in self.layouts}))
+                self.assertEqual(targets, Counter({target: 1 for target in (*self.layouts, f"{name}-help")}))
 
     def test_required_characters_remain_reachable(self):
         required = {
@@ -414,12 +432,17 @@ class ValidationRegressionTests(unittest.TestCase):
             flick["press_actions"][0]["text"] = word + " "
 
         mutations = [
-            ("grid_keeps_only_top_left_empty_without_overlaps", "overlapping keys", overlap),
-            ("grid_keeps_only_top_left_empty_without_overlaps", "unexpected gap", remove_delete),
-            ("grid_keeps_only_top_left_empty_without_overlaps", "occupied top left",
-             lambda layouts: layouts["num"]["interface"]["keys"].append({
-                 "specifier": {"x": 0, "y": 0, "width": 1, "height": 1},
-             })),
+            ("grid_is_full_without_overlaps", "overlapping keys", overlap),
+            ("grid_is_full_without_overlaps", "unexpected gap", remove_delete),
+            ("grid_is_full_without_overlaps", "missing help toggle",
+             lambda layouts: layouts["num"]["interface"]["keys"].pop(0)),
+            ("top_left_toggles_the_current_layout_help", "help opens the wrong layout",
+             lambda layouts: key(layouts, "eng", 0, 0)["press_actions"][0].update(identifier="ja-help")),
+            ("top_left_toggles_the_current_layout_help", "help toggles on hold",
+             lambda layouts: key(layouts, "ja", 0, 0)["longpress_actions"]["start"].append(
+                 {"type": "move_tab", "tab_type": "custom", "identifier": "ja-help"})),
+            ("top_left_toggles_the_current_layout_help", "help emits a question mark",
+             lambda layouts: key(layouts, "num", 0, 0).update(press_actions=[{"type": "input", "text": "?"}])),
             ("bottom_left_taps_ja_and_flicks_num_or_eng", "layout restored to top left",
              lambda layouts: next(entry for entry in layouts["eng"]["interface"]["keys"]
                                   if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 3)["specifier"].update(y=0)),
