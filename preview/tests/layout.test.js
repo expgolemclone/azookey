@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import test from 'node:test';
-import { actionsText, gridRows, keyLabel, keyVariants, labelText } from '../src/layout.js';
+import { actionsText, keyLabel, keyVariants, labelText } from '../src/layout.js';
 
 const files = readdirSync(new URL('../../', import.meta.url))
   .filter((name) => name.endsWith('.json'))
@@ -17,56 +17,18 @@ test('uses every repository layout without copying its data', () => {
   assert.deepEqual(Object.keys(layouts), ['eng', 'ja', 'num']);
   for (const layout of Object.values(layouts)) {
     const before = JSON.stringify(layout);
-    for (const row of gridRows(layout)) {
-      for (const { entry } of row) {
-        if (!entry) continue;
-        assert.ok(keyLabel(entry));
-        for (const variant of keyVariants(entry)) {
-          assert.ok(labelText(variant.key.design.label));
-          actionsText(variant.key.press_actions);
-        }
+    for (const entry of layout.interface.keys) {
+      assert.ok(keyLabel(entry));
+      for (const variant of keyVariants(entry)) {
+        assert.ok(labelText(variant.key.design.label));
+        actionsText(variant.key.press_actions);
       }
     }
     assert.equal(JSON.stringify(layout), before);
   }
 });
 
-test('row_count is horizontal, column_count is vertical, and merged keys appear once', () => {
-  for (const layout of Object.values(layouts)) {
-    const rows = gridRows(layout);
-    assert.equal(rows.length, 4);
-    assert.deepEqual(rows.map((row) => row.length), [5, 5, 5, 4]);
-    assert.equal(rows.flat().filter(({ entry }) => entry).length, 18);
-    assert.deepEqual(rows[2][4].entry.specifier, { height: 2, width: 1, x: 4, y: 2 });
-    assert.equal(keyLabel(rows[2][4].entry), 'ENTER');
-    assert.deepEqual(rows[3][0], { x: 0, y: 3, entry: null });
-    rows.forEach((row, y) => {
-      assert.deepEqual(row.map((cell) => cell.x), y === 3 ? [0, 1, 2, 3] : [0, 1, 2, 3, 4]);
-      assert.ok(row.every((cell) => cell.y === y));
-    });
-  }
-});
-
-test('grid position, not source array order, controls placement', () => {
-  const layout = structuredClone(layouts.ja);
-  layout.interface.keys.reverse();
-  assert.deepEqual(gridRows(layout), gridRows(layouts.ja));
-});
-
-test('empty cells retain their coordinates while merged cells are not duplicated', () => {
-  const wide = { specifier: { x: 1, y: 0, width: 2, height: 2 } };
-  const rows = gridRows({ interface: {
-    key_layout: { type: 'grid_fit', row_count: 4, column_count: 3 },
-    keys: [wide],
-  } });
-  assert.deepEqual(rows, [
-    [{ x: 0, y: 0, entry: null }, { x: 1, y: 0, entry: wide }, { x: 3, y: 0, entry: null }],
-    [{ x: 0, y: 1, entry: null }, { x: 3, y: 1, entry: null }],
-    Array.from({ length: 4 }, (_, x) => ({ x, y: 2, entry: null })),
-  ]);
-});
-
-test('compound labels match input case, caps, and directional text', () => {
+test('plain main labels retain input case, caps, and separate flick labels', () => {
   const r = entryAt('eng', 1, 0);
   assert.equal(keyLabel(r), 'r');
   assert.equal(actionsText(r.key.press_actions), 'input(text="r")');
@@ -117,11 +79,11 @@ test('SF Symbols and directions have English labels', () => {
     assert.equal(labelText({ system_image }), expected);
   }
   assert.deepEqual(keyVariants(entryAt('ja', 1, 0)).map(({ label }) => label),
-    ['Center', 'Up', 'Left', 'Right', 'Down']);
+    ['Tap', 'Up', 'Left', 'Right', 'Down']);
   assert.throws(() => labelText({ system_image: 'unknown.symbol' }), /Unsupported system image/);
   assert.throws(() => labelText({ unknown: 'label' }), /Unsupported label/);
   assert.throws(() => keyLabel({ key_type: 'system', key: { type: 'unknown' } }), /Unsupported system key/);
-  assert.throws(() => gridRows({ interface: { key_layout: { type: 'grid_scroll' } } }), /Unsupported layout/);
+  assert.throws(() => labelText({ type: 'main_and_directions', main: 'r', directions: { top: 'really' } }), /Unsupported label/);
 });
 
 test('all center and flick keys disable long-press without timing overrides', () => {

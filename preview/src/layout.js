@@ -19,7 +19,6 @@ const symbolLabels = {
 
 export function labelText(label) {
   if (Object.hasOwn(label, 'text')) return label.text;
-  if (label.type === 'main_and_directions') return label.main;
   if (Object.hasOwn(label, 'system_image')) {
     if (!Object.hasOwn(symbolLabels, label.system_image)) {
       throw new Error(`Unsupported system image: ${label.system_image}`);
@@ -39,24 +38,10 @@ export function keyLabel(entry) {
   return labelText(entry.key.design.label);
 }
 
-export function gridRows(layout) {
-  const { type, row_count, column_count } = layout.interface.key_layout;
-  if (type !== 'grid_fit') throw new Error(`Unsupported layout: ${type}`);
-  return Array.from({ length: column_count }, (_, y) =>
-    Array.from({ length: row_count }, (_, x) => {
-      const entry = layout.interface.keys.find(({ specifier: position }) =>
-        x >= position.x && x < position.x + position.width
-        && y >= position.y && y < position.y + position.height);
-      if (entry && (entry.specifier.x !== x || entry.specifier.y !== y)) return null;
-      return { x, y, entry: entry ?? null };
-    }).filter((cell) => cell !== null),
-  );
-}
-
 export function keyVariants(entry) {
   if (entry.key_type === 'system') return [];
   return [
-    { direction: 'center', label: 'Center', key: entry.key },
+    { direction: 'center', label: 'Tap', key: entry.key },
     ...directions.flatMap(({ value, label }) => {
       const variation = entry.key.variations.find((item) => item.direction === value);
       return variation ? [{ direction: value, label, key: variation.key }] : [];

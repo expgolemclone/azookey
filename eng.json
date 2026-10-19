@@ -14,13 +14,7 @@
           "design": {
             "color": "special",
             "label": {
-              "directions": {
-                "bottom": "ja",
-                "right": "eng",
-                "top": "num"
-              },
-              "main": "Layout",
-              "type": "main_and_directions"
+              "text": "Layout"
             }
           },
           "longpress_actions": {
@@ -111,14 +105,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "read",
-                "left": "right",
-                "right": "real",
-                "top": "really"
-              },
-              "main": "r",
-              "type": "main_and_directions"
+              "text": "r"
             }
           },
           "longpress_actions": {
@@ -232,14 +219,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "u",
-                "left": "on",
-                "right": "k",
-                "top": "of"
-              },
-              "main": "o",
-              "type": "main_and_directions"
+              "text": "o"
             }
           },
           "longpress_actions": {
@@ -353,14 +333,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "f",
-                "left": "q",
-                "right": "he",
-                "top": "have"
-              },
-              "main": "h",
-              "type": "main_and_directions"
+              "text": "h"
             }
           },
           "longpress_actions": {
@@ -643,14 +616,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "new",
-                "left": "no",
-                "right": "g",
-                "top": "not"
-              },
-              "main": "n",
-              "type": "main_and_directions"
+              "text": "n"
             }
           },
           "longpress_actions": {
@@ -764,14 +730,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "m",
-                "left": "x",
-                "right": "d",
-                "top": "c"
-              },
-              "main": "e",
-              "type": "main_and_directions"
+              "text": "e"
             }
           },
           "longpress_actions": {
@@ -885,14 +844,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "p",
-                "left": "w",
-                "right": "y",
-                "top": "the"
-              },
-              "main": "t",
-              "type": "main_and_directions"
+              "text": "t"
             }
           },
           "longpress_actions": {
@@ -1099,13 +1051,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "``````",
-                "right": ">",
-                "top": "``"
-              },
-              "main": "@",
-              "type": "main_and_directions"
+              "text": "@"
             }
           },
           "longpress_actions": {
@@ -1198,14 +1144,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "it",
-                "left": "is",
-                "right": "z",
-                "top": "in"
-              },
-              "main": "i",
-              "type": "main_and_directions"
+              "text": "i"
             }
           },
           "longpress_actions": {
@@ -1319,14 +1258,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "are",
-                "left": "and",
-                "right": "as",
-                "top": "v"
-              },
-              "main": "a",
-              "type": "main_and_directions"
+              "text": "a"
             }
           },
           "longpress_actions": {
@@ -1440,14 +1372,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "she",
-                "left": "b",
-                "right": "so",
-                "top": "j"
-              },
-              "main": "s",
-              "type": "main_and_directions"
+              "text": "s"
             }
           },
           "longpress_actions": {
@@ -1611,13 +1536,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "left": "'",
-                "right": "-",
-                "top": "\""
-              },
-              "main": "caps",
-              "type": "main_and_directions"
+              "text": "caps"
             }
           },
           "longpress_actions": {
@@ -1709,14 +1628,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "love",
-                "left": "life",
-                "right": "last",
-                "top": "like"
-              },
-              "main": "l",
-              "type": "main_and_directions"
+              "text": "l"
             }
           },
           "longpress_actions": {
@@ -1830,13 +1742,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "left": ".",
-                "right": "!",
-                "top": "?"
-              },
-              "main": ",",
-              "type": "main_and_directions"
+              "text": ","
             }
           },
           "longpress_actions": {

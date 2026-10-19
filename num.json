@@ -14,13 +14,7 @@
           "design": {
             "color": "special",
             "label": {
-              "directions": {
-                "bottom": "ja",
-                "right": "eng",
-                "top": "num"
-              },
-              "main": "Layout",
-              "type": "main_and_directions"
+              "text": "Layout"
             }
           },
           "longpress_actions": {
@@ -111,14 +105,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "↓",
-                "left": "←",
-                "right": "→",
-                "top": "↑"
-              },
-              "main": "1",
-              "type": "main_and_directions"
+              "text": "1"
             }
           },
           "longpress_actions": {
@@ -232,14 +219,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "%",
-                "left": "¥",
-                "right": "$",
-                "top": "°"
-              },
-              "main": "2",
-              "type": "main_and_directions"
+              "text": "2"
             }
           },
           "longpress_actions": {
@@ -353,14 +333,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "÷",
-                "left": "+",
-                "right": "-",
-                "top": "×"
-              },
-              "main": "3",
-              "type": "main_and_directions"
+              "text": "3"
             }
           },
           "longpress_actions": {
@@ -643,14 +616,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": ";",
-                "left": "〒",
-                "right": "･",
-                "top": ":"
-              },
-              "main": "4",
-              "type": "main_and_directions"
+              "text": "4"
             }
           },
           "longpress_actions": {
@@ -764,14 +730,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "|",
-                "left": "@",
-                "right": "#",
-                "top": "&"
-              },
-              "main": "5",
-              "type": "main_and_directions"
+              "text": "5"
             }
           },
           "longpress_actions": {
@@ -885,14 +844,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "≈",
-                "left": "<",
-                "right": ">",
-                "top": "="
-              },
-              "main": "6",
-              "type": "main_and_directions"
+              "text": "6"
             }
           },
           "longpress_actions": {
@@ -1099,13 +1051,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "``````",
-                "right": ">",
-                "top": "``"
-              },
-              "main": "@",
-              "type": "main_and_directions"
+              "text": "@"
             }
           },
           "longpress_actions": {
@@ -1198,14 +1144,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "※",
-                "left": "○",
-                "right": "♡",
-                "top": "☆"
-              },
-              "main": "7",
-              "type": "main_and_directions"
+              "text": "7"
             }
           },
           "longpress_actions": {
@@ -1319,14 +1258,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "⟨⟩",
-                "left": "[]",
-                "right": "()",
-                "top": "{}"
-              },
-              "main": "8",
-              "type": "main_and_directions"
+              "text": "8"
             }
           },
           "longpress_actions": {
@@ -1440,14 +1372,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "_",
-                "left": "\\",
-                "right": "/",
-                "top": "^"
-              },
-              "main": "9",
-              "type": "main_and_directions"
+              "text": "9"
             }
           },
           "longpress_actions": {
@@ -1696,13 +1621,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "left": "'",
-                "right": "@",
-                "top": "\""
-              },
-              "main": "0",
-              "type": "main_and_directions"
+              "text": "0"
             }
           },
           "longpress_actions": {
@@ -1795,13 +1714,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "left": ".",
-                "right": "!",
-                "top": "?"
-              },
-              "main": ",",
-              "type": "main_and_directions"
+              "text": ","
             }
           },
           "longpress_actions": {

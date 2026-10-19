@@ -11,18 +11,17 @@ export default defineConfig({
     browserName: 'chromium',
     headless: true,
   },
-  projects: [
-    { name: 'production', use: { baseURL: 'http://127.0.0.1:4173' } },
-    { name: 'development', use: { baseURL: 'http://127.0.0.1:5173' } },
-  ],
+  projects: [{ name: 'production' }, { name: 'development' }],
   webServer: [
     {
-      command: 'npm run serve -- --port 4173 --strictPort',
-      url: 'http://127.0.0.1:4173',
+      command: 'npm run serve -- --port 0 --strictPort',
+      env: { FORCE_COLOR: '0' },
+      wait: { stdout: /(?<preview_production_url>http:\/\/127\.0\.0\.1:\d+\/)/ },
     },
     {
-      command: 'npm start -- --port 5173 --strictPort',
-      url: 'http://127.0.0.1:5173',
+      command: 'npm start -- --port 0 --strictPort',
+      env: { FORCE_COLOR: '0' },
+      wait: { stdout: /(?<preview_development_url>http:\/\/127\.0\.0\.1:\d+\/)/ },
     },
   ],
 });

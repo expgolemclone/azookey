@@ -1,0 +1,75 @@
+.keyboard {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--rows), minmax(72px, 1fr));
+  gap: 6px;
+}
+
+.key {
+  --key-background: var(--mantine-color-dark-6);
+  --key-hover: var(--mantine-color-dark-5);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--mantine-radius-md);
+  background: var(--key-background);
+  color: var(--mantine-color-gray-1);
+  font-size: var(--mantine-font-size-xl);
+  line-height: 1.3;
+  text-align: center;
+}
+
+.key[data-special] {
+  --key-background: var(--mantine-color-dark-7);
+  --key-hover: var(--mantine-color-dark-6);
+
+  font-size: var(--mantine-font-size-sm);
+}
+
+.key[aria-pressed='true'] {
+  --key-background: var(--mantine-color-dark-5);
+  --key-hover: var(--mantine-color-dark-4);
+
+  border-color: var(--mantine-primary-color-4);
+}
+
+.key:hover {
+  background: var(--key-hover);
+}
+
+.key:focus-visible {
+  outline: 2px solid var(--mantine-primary-color-4);
+  outline-offset: 2px;
+}
+
+.keyLabel {
+  display: block;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.gestureColumn {
+  width: 20%;
+}
+
+.labelColumn {
+  width: 22%;
+}
+
+.actionLabel {
+  overflow-wrap: anywhere;
+}
+
+.action {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

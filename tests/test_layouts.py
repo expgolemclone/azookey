@@ -60,7 +60,7 @@ def primary_label(key):
     label = key["design"]["label"]
     if "system_image" in label:
         return "system_image", label["system_image"]
-    return "text", label["main"] if "main" in label else label["text"]
+    return "text", label["text"]
 
 
 def key_behavior(key):
@@ -104,21 +104,10 @@ class LayoutTests(unittest.TestCase):
     }
 
     def assert_label_contract(self, label):
-        if "text" in label or "system_image" in label:
-            field = "text" if "text" in label else "system_image"
-            self.assertEqual(set(label), {field})
-            self.assertIs(type(label[field]), str)
-            self.assertTrue(label[field])
-        else:
-            self.assertEqual(set(label), {"type", "main", "directions"})
-            self.assertEqual(label["type"], "main_and_directions")
-            self.assertIs(type(label["main"]), str)
-            self.assertTrue(label["main"])
-            self.assertIs(type(label["directions"]), dict)
-            self.assertLessEqual(set(label["directions"]), DIRECTIONS)
-            for text in label["directions"].values():
-                self.assertIs(type(text), str)
-                self.assertTrue(text)
+        field = "system_image" if "system_image" in label else "text"
+        self.assertEqual(set(label), {field})
+        self.assertIs(type(label[field]), str)
+        self.assertTrue(label[field])
 
     def assert_action_contract(self, actions):
         self.assertIs(type(actions), list)
@@ -247,10 +236,7 @@ class LayoutTests(unittest.TestCase):
                         if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 0)
             with self.subTest(layout=name):
                 self.assertEqual(menu, {
-                    "design": {"color": "special", "label": {
-                        "type": "main_and_directions", "main": "Layout",
-                        "directions": {"top": "num", "right": "eng", "bottom": "ja"},
-                    }},
+                    "design": {"color": "special", "label": {"text": "Layout"}},
                     "press_actions": [],
                     "longpress_actions": {"start": [], "repeat": []},
                     "variations": [
@@ -268,10 +254,7 @@ class LayoutTests(unittest.TestCase):
             symbols = next(entry["key"] for entry in layout["interface"]["keys"]
                            if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 2)
             with self.subTest(layout=name):
-                self.assertEqual(symbols["design"], {"color": "normal", "label": {
-                    "type": "main_and_directions", "main": "@",
-                    "directions": {"top": "``", "right": ">", "bottom": "``````"},
-                }})
+                self.assertEqual(symbols["design"], {"color": "normal", "label": {"text": "@"}})
                 self.assertEqual(symbols["press_actions"], [{"type": "input", "text": "@"}])
                 self.assertEqual(symbols["longpress_actions"], {"start": [], "repeat": []})
                 self.assertEqual({flick["direction"]: flick["key"] for flick in symbols["variations"]}, {
@@ -358,8 +341,8 @@ class LayoutTests(unittest.TestCase):
                          key=lambda entry: (entry["specifier"]["y"], entry["specifier"]["x"]))
         for entry in entries:
             key = entry["key"]
-            label = key["design"]["label"]
-            if label.get("main") not in set(ascii_lowercase):
+            label = primary_label(key)[1]
+            if label not in set(ascii_lowercase):
                 continue
             flicks = {flick["direction"]: flick["key"] for flick in key["variations"]}
             for direction in ("top", "left", "right", "bottom"):
@@ -370,7 +353,7 @@ class LayoutTests(unittest.TestCase):
                 if len(word) <= 1:
                     continue
                 words.append(word)
-                with self.subTest(key=label["main"], direction=direction, word=word):
+                with self.subTest(key=label, direction=direction, word=word):
                     self.assertTrue(word.startswith(key["press_actions"][0]["text"]))
                     self.assertEqual(flick["press_actions"], [{"type": "input", "text": word + " "}])
         self.assertEqual(words, expected)
@@ -385,21 +368,6 @@ class LayoutTests(unittest.TestCase):
                 expected = {" ": "Space", "\t": "tab", "\n": "Return"}.get(text, text.removesuffix(" "))
                 with self.subTest(layout=name, label=key["design"]["label"], input=text):
                     self.assertEqual(primary_label(key), ("text", expected))
-
-    def test_directional_hints_match_their_flicks(self):
-        for name, layout in self.layouts.items():
-            for entry in layout["interface"]["keys"]:
-                if entry["key_type"] != "custom":
-                    continue
-                key = entry["key"]
-                label = key["design"]["label"]
-                if label.get("type") != "main_and_directions":
-                    continue
-                with self.subTest(layout=name, position=entry["specifier"]):
-                    flicks = {flick["direction"]: flick["key"] for flick in key["variations"]}
-                    self.assertEqual(set(label["directions"]), set(flicks))
-                    for direction, hint in label["directions"].items():
-                        self.assertEqual(primary_label(flicks[direction]), ("text", hint))
 
     def test_all_longpress_actions_are_disabled(self):
         for name, layout in self.layouts.items():
@@ -438,7 +406,6 @@ class ValidationRegressionTests(unittest.TestCase):
 
         def replace_word(layouts, word):
             parent = key(layouts, "eng", 1, 0)
-            parent["design"]["label"]["directions"]["top"] = word
             flick = next(item["key"] for item in parent["variations"] if item["direction"] == "top")
             flick["design"]["label"]["text"] = word
             flick["press_actions"][0]["text"] = word + " "
@@ -460,7 +427,7 @@ class ValidationRegressionTests(unittest.TestCase):
              lambda layouts: key(layouts, "eng", 0, 0)["press_actions"].append(
                  {"type": "move_tab", "tab_type": "system", "identifier": "emoji_tab"})),
             ("top_left_only_switches_layouts_by_flick", "retired emoji label",
-             lambda layouts: key(layouts, "ja", 0, 0)["design"]["label"].update(main="Emoji")),
+             lambda layouts: key(layouts, "ja", 0, 0)["design"]["label"].update(text="Emoji")),
             ("layout_set_and_supported_format", "retired emoji flick",
              lambda layouts: key(layouts, "num", 0, 0)["variations"][0]["key"]["press_actions"][0].update(
                  tab_type="system", identifier="emoji_tab")),
@@ -515,16 +482,20 @@ class ValidationRegressionTests(unittest.TestCase):
             ("all_longpress_actions_are_disabled", "space hold",
              lambda layouts: key(layouts, "ja", 4, 1)["longpress_actions"]["start"].append(
                  {"type": "toggle_cursor_bar"})),
-            ("directional_hints_match_their_flicks", "wrong flick hint",
-             lambda layouts: key(layouts, "eng", 1, 0)["design"]["label"]["directions"].update(top="why")),
+            ("layout_set_and_supported_format", "permanent directional hints",
+             lambda layouts: key(layouts, "eng", 1, 0)["design"].update(label={
+                 "type": "main_and_directions", "main": "r", "directions": {"top": "really"},
+             })),
+            ("layout_set_and_supported_format", "directional hints mixed with plain text",
+             lambda layouts: key(layouts, "num", 1, 0)["design"]["label"].update(directions={"top": "↑"})),
             ("input_labels_match_their_actions", "wrong flick input",
              lambda layouts: key(layouts, "eng", 1, 0)["variations"][0]["key"]["press_actions"][0].update(text="why ")),
             ("input_labels_match_their_actions", "uppercase center label for lowercase input",
-             lambda layouts: key(layouts, "eng", 1, 0)["design"]["label"].update(main="R")),
+             lambda layouts: key(layouts, "eng", 1, 0)["design"]["label"].update(text="R")),
             ("input_labels_match_their_actions", "uppercase flick label for lowercase input",
              lambda layouts: key(layouts, "eng", 3, 2)["variations"][0]["key"]["design"]["label"].update(text="B")),
             ("input_labels_match_their_actions", "misleading punctuation group label",
-             lambda layouts: key(layouts, "ja", 3, 3)["design"]["label"].update(main=",.?!")),
+             lambda layouts: key(layouts, "ja", 3, 3)["design"]["label"].update(text=",.?!")),
             ("input_labels_match_their_actions", "wrong kana flick label",
              lambda layouts: key(layouts, "ja", 1, 0)["variations"][0]["key"]["design"]["label"].update(text="う")),
             ("layout_set_and_supported_format", "unsupported action",

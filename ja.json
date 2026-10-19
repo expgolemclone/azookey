@@ -14,13 +14,7 @@
           "design": {
             "color": "special",
             "label": {
-              "directions": {
-                "bottom": "ja",
-                "right": "eng",
-                "top": "num"
-              },
-              "main": "Layout",
-              "type": "main_and_directions"
+              "text": "Layout"
             }
           },
           "longpress_actions": {
@@ -1057,13 +1051,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "bottom": "``````",
-                "right": ">",
-                "top": "``"
-              },
-              "main": "@",
-              "type": "main_and_directions"
+              "text": "@"
             }
           },
           "longpress_actions": {
@@ -1654,13 +1642,7 @@
           "design": {
             "color": "normal",
             "label": {
-              "directions": {
-                "left": ".",
-                "right": "!",
-                "top": "?"
-              },
-              "main": ",",
-              "type": "main_and_directions"
+              "text": ","
             }
           },
           "longpress_actions": {
