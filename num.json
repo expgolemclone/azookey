@@ -12,24 +12,550 @@
       {
         "key": {
           "design": {
+            "color": "special",
+            "label": {
+              "directions": {
+                "bottom": "ja",
+                "right": "eng",
+                "top": "num"
+              },
+              "main": "Emoji",
+              "type": "main_and_directions"
+            }
+          },
+          "longpress_actions": {
+            "repeat": [],
+            "start": []
+          },
+          "press_actions": [
+            {
+              "identifier": "emoji_tab",
+              "tab_type": "system",
+              "type": "move_tab"
+            }
+          ],
+          "variations": [
+            {
+              "direction": "top",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "num"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "identifier": "num",
+                    "tab_type": "custom",
+                    "type": "move_tab"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "right",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "eng"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "identifier": "eng",
+                    "tab_type": "custom",
+                    "type": "move_tab"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "bottom",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "ja"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "identifier": "ja",
+                    "tab_type": "custom",
+                    "type": "move_tab"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            }
+          ]
+        },
+        "key_type": "custom",
+        "specifier": {
+          "height": 1,
+          "width": 1,
+          "x": 0,
+          "y": 0
+        },
+        "specifier_type": "grid_fit"
+      },
+      {
+        "key": {
+          "design": {
+            "color": "normal",
+            "label": {
+              "directions": {
+                "bottom": "↓",
+                "left": "←",
+                "right": "→",
+                "top": "↑"
+              },
+              "main": "1",
+              "type": "main_and_directions"
+            }
+          },
+          "longpress_actions": {
+            "repeat": [],
+            "start": []
+          },
+          "press_actions": [
+            {
+              "text": "1",
+              "type": "input"
+            }
+          ],
+          "variations": [
+            {
+              "direction": "left",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "←"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "←",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "right",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "→"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "→",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "top",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "↑"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "↑",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "bottom",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "↓"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "↓",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            }
+          ]
+        },
+        "key_type": "custom",
+        "specifier": {
+          "height": 1,
+          "width": 1,
+          "x": 1,
+          "y": 0
+        },
+        "specifier_type": "grid_fit"
+      },
+      {
+        "key": {
+          "design": {
+            "color": "normal",
+            "label": {
+              "directions": {
+                "bottom": "%",
+                "left": "¥",
+                "right": "$",
+                "top": "°"
+              },
+              "main": "2",
+              "type": "main_and_directions"
+            }
+          },
+          "longpress_actions": {
+            "repeat": [],
+            "start": []
+          },
+          "press_actions": [
+            {
+              "text": "2",
+              "type": "input"
+            }
+          ],
+          "variations": [
+            {
+              "direction": "left",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "¥"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "¥",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "top",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "°"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "°",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "right",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "$"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "$",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "bottom",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "%"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "%",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            }
+          ]
+        },
+        "key_type": "custom",
+        "specifier": {
+          "height": 1,
+          "width": 1,
+          "x": 2,
+          "y": 0
+        },
+        "specifier_type": "grid_fit"
+      },
+      {
+        "key": {
+          "design": {
+            "color": "normal",
+            "label": {
+              "directions": {
+                "bottom": "÷",
+                "left": "+",
+                "right": "-",
+                "top": "×"
+              },
+              "main": "3",
+              "type": "main_and_directions"
+            }
+          },
+          "longpress_actions": {
+            "repeat": [],
+            "start": []
+          },
+          "press_actions": [
+            {
+              "text": "3",
+              "type": "input"
+            }
+          ],
+          "variations": [
+            {
+              "direction": "left",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "+"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "+",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "top",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "×"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "×",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "right",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "-"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "-",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "bottom",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "÷"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "÷",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            }
+          ]
+        },
+        "key_type": "custom",
+        "specifier": {
+          "height": 1,
+          "width": 1,
+          "x": 3,
+          "y": 0
+        },
+        "specifier_type": "grid_fit"
+      },
+      {
+        "key": {
+          "design": {
+            "color": "special",
+            "label": {
+              "system_image": "delete.left"
+            }
+          },
+          "longpress_actions": {
+            "repeat": [],
+            "start": []
+          },
+          "press_actions": [
+            {
+              "count": 1,
+              "type": "delete"
+            }
+          ],
+          "variations": [
+            {
+              "direction": "left",
+              "key": {
+                "design": {
+                  "label": {
+                    "system_image": "delete.left.fill"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "type": "smart_delete_default"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "bottom",
+              "key": {
+                "design": {
+                  "label": {
+                    "system_image": "keyboard.chevron.compact.down.fill"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "type": "dismiss_keyboard"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            }
+          ]
+        },
+        "key_type": "custom",
+        "specifier": {
+          "height": 1,
+          "width": 1,
+          "x": 4,
+          "y": 0
+        },
+        "specifier_type": "grid_fit"
+      },
+      {
+        "key": {
+          "design": {
             "color": "normal",
             "label": {
               "system_image": "chevron.left"
             }
           },
           "longpress_actions": {
-            "repeat": [
-              {
-                "count": -1,
-                "type": "move_cursor"
-              }
-            ],
-            "start": [
-              {
-                "count": -1,
-                "type": "move_cursor"
-              }
-            ]
+            "repeat": [],
+            "start": []
           },
           "press_actions": [
             {
@@ -47,18 +573,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "repeat": [
-                    {
-                      "count": 1,
-                      "type": "move_cursor"
-                    }
-                  ],
-                  "start": [
-                    {
-                      "count": 1,
-                      "type": "move_cursor"
-                    }
-                  ]
+                  "repeat": [],
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -124,584 +640,6 @@
           "height": 1,
           "width": 1,
           "x": 0,
-          "y": 0
-        },
-        "specifier_type": "grid_fit"
-      },
-      {
-        "key": {
-          "design": {
-            "color": "normal",
-            "label": {
-              "directions": {
-                "bottom": "↓",
-                "left": "←",
-                "right": "→",
-                "top": "↑"
-              },
-              "main": "1",
-              "type": "main_and_directions"
-            }
-          },
-          "longpress_actions": {
-            "duration": "light",
-            "repeat": [],
-            "start": [
-              {
-                "text": "１",
-                "type": "input"
-              }
-            ]
-          },
-          "press_actions": [
-            {
-              "text": "1",
-              "type": "input"
-            }
-          ],
-          "variations": [
-            {
-              "direction": "left",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "←"
-                  }
-                },
-                "longpress_actions": {
-                  "duration": "light",
-                  "repeat": [],
-                  "start": [
-                    {
-                      "text": "◀︎",
-                      "type": "input"
-                    }
-                  ]
-                },
-                "press_actions": [
-                  {
-                    "text": "←",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "right",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "→"
-                  }
-                },
-                "longpress_actions": {
-                  "duration": "light",
-                  "repeat": [],
-                  "start": [
-                    {
-                      "text": "▶︎",
-                      "type": "input"
-                    }
-                  ]
-                },
-                "press_actions": [
-                  {
-                    "text": "→",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "top",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "↑"
-                  }
-                },
-                "longpress_actions": {
-                  "duration": "light",
-                  "repeat": [],
-                  "start": [
-                    {
-                      "text": "▲",
-                      "type": "input"
-                    }
-                  ]
-                },
-                "press_actions": [
-                  {
-                    "text": "↑",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "bottom",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "↓"
-                  }
-                },
-                "longpress_actions": {
-                  "duration": "light",
-                  "repeat": [],
-                  "start": [
-                    {
-                      "text": "▼",
-                      "type": "input"
-                    }
-                  ]
-                },
-                "press_actions": [
-                  {
-                    "text": "↓",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            }
-          ]
-        },
-        "key_type": "custom",
-        "specifier": {
-          "height": 1,
-          "width": 1,
-          "x": 1,
-          "y": 0
-        },
-        "specifier_type": "grid_fit"
-      },
-      {
-        "key": {
-          "design": {
-            "color": "normal",
-            "label": {
-              "directions": {
-                "bottom": "%",
-                "left": "¥",
-                "right": "$",
-                "top": "°"
-              },
-              "main": "2",
-              "type": "main_and_directions"
-            }
-          },
-          "longpress_actions": {
-            "duration": "light",
-            "repeat": [],
-            "start": [
-              {
-                "text": "２",
-                "type": "input"
-              }
-            ]
-          },
-          "press_actions": [
-            {
-              "text": "2",
-              "type": "input"
-            }
-          ],
-          "variations": [
-            {
-              "direction": "left",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "¥"
-                  }
-                },
-                "longpress_actions": {
-                  "duration": "light",
-                  "repeat": [],
-                  "start": [
-                    {
-                      "text": "￥",
-                      "type": "input"
-                    }
-                  ]
-                },
-                "press_actions": [
-                  {
-                    "text": "¥",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "top",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "°"
-                  }
-                },
-                "longpress_actions": {
-                  "duration": "light",
-                  "repeat": [],
-                  "start": [
-                    {
-                      "text": "℃",
-                      "type": "input"
-                    }
-                  ]
-                },
-                "press_actions": [
-                  {
-                    "text": "°",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "right",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "$"
-                  }
-                },
-                "longpress_actions": {
-                  "duration": "light",
-                  "repeat": [],
-                  "start": [
-                    {
-                      "text": "＄",
-                      "type": "input"
-                    }
-                  ]
-                },
-                "press_actions": [
-                  {
-                    "text": "$",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "bottom",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "%"
-                  }
-                },
-                "longpress_actions": {
-                  "duration": "light",
-                  "repeat": [],
-                  "start": [
-                    {
-                      "text": "％",
-                      "type": "input"
-                    }
-                  ]
-                },
-                "press_actions": [
-                  {
-                    "text": "%",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            }
-          ]
-        },
-        "key_type": "custom",
-        "specifier": {
-          "height": 1,
-          "width": 1,
-          "x": 2,
-          "y": 0
-        },
-        "specifier_type": "grid_fit"
-      },
-      {
-        "key": {
-          "design": {
-            "color": "normal",
-            "label": {
-              "directions": {
-                "bottom": "÷",
-                "left": "+",
-                "right": "-",
-                "top": "×"
-              },
-              "main": "3",
-              "type": "main_and_directions"
-            }
-          },
-          "longpress_actions": {
-            "duration": "light",
-            "repeat": [],
-            "start": [
-              {
-                "text": "３",
-                "type": "input"
-              }
-            ]
-          },
-          "press_actions": [
-            {
-              "text": "3",
-              "type": "input"
-            }
-          ],
-          "variations": [
-            {
-              "direction": "left",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "+"
-                  }
-                },
-                "longpress_actions": {
-                  "duration": "light",
-                  "repeat": [],
-                  "start": [
-                    {
-                      "text": "＋",
-                      "type": "input"
-                    }
-                  ]
-                },
-                "press_actions": [
-                  {
-                    "text": "+",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "top",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "×"
-                  }
-                },
-                "longpress_actions": {
-                  "duration": "light",
-                  "repeat": [],
-                  "start": [
-                    {
-                      "text": "❌",
-                      "type": "input"
-                    }
-                  ]
-                },
-                "press_actions": [
-                  {
-                    "text": "×",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "right",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "-"
-                  }
-                },
-                "longpress_actions": {
-                  "duration": "light",
-                  "repeat": [],
-                  "start": [
-                    {
-                      "text": "－",
-                      "type": "input"
-                    }
-                  ]
-                },
-                "press_actions": [
-                  {
-                    "text": "-",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "bottom",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "÷"
-                  }
-                },
-                "longpress_actions": {
-                  "duration": "light",
-                  "repeat": [],
-                  "start": [
-                    {
-                      "text": "√",
-                      "type": "input"
-                    }
-                  ]
-                },
-                "press_actions": [
-                  {
-                    "text": "÷",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            }
-          ]
-        },
-        "key_type": "custom",
-        "specifier": {
-          "height": 1,
-          "width": 1,
-          "x": 3,
-          "y": 0
-        },
-        "specifier_type": "grid_fit"
-      },
-      {
-        "key": {
-          "design": {
-            "color": "special",
-            "label": {
-              "system_image": "delete.left"
-            }
-          },
-          "longpress_actions": {
-            "repeat": [
-              {
-                "count": 1,
-                "type": "delete"
-              }
-            ],
-            "start": []
-          },
-          "press_actions": [
-            {
-              "count": 1,
-              "type": "delete"
-            }
-          ],
-          "variations": [
-            {
-              "direction": "left",
-              "key": {
-                "design": {
-                  "label": {
-                    "system_image": "delete.left.fill"
-                  }
-                },
-                "longpress_actions": {
-                  "repeat": [],
-                  "start": []
-                },
-                "press_actions": [
-                  {
-                    "type": "smart_delete_default"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "bottom",
-              "key": {
-                "design": {
-                  "label": {
-                    "system_image": "keyboard.chevron.compact.down.fill"
-                  }
-                },
-                "longpress_actions": {
-                  "repeat": [],
-                  "start": []
-                },
-                "press_actions": [
-                  {
-                    "type": "dismiss_keyboard"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "top",
-              "key": {
-                "design": {
-                  "label": {
-                    "system_image": "keyboard.onehanded.right.fill"
-                  }
-                },
-                "longpress_actions": {
-                  "repeat": [],
-                  "start": []
-                },
-                "press_actions": [
-                  {
-                    "type": "enable_resizing_mode"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            }
-          ]
-        },
-        "key_type": "custom",
-        "specifier": {
-          "height": 1,
-          "width": 1,
-          "x": 4,
-          "y": 0
-        },
-        "specifier_type": "grid_fit"
-      },
-      {
-        "key": {
-          "design": {
-            "color": "special",
-            "label": {
-              "text": "abc"
-            }
-          },
-          "longpress_actions": {
-            "repeat": [],
-            "start": []
-          },
-          "press_actions": [
-            {
-              "identifier": "abc",
-              "tab_type": "custom",
-              "type": "move_tab"
-            }
-          ],
-          "variations": []
-        },
-        "key_type": "custom",
-        "specifier": {
-          "height": 1,
-          "width": 1,
-          "x": 0,
           "y": 1
         },
         "specifier_type": "grid_fit"
@@ -722,14 +660,8 @@
             }
           },
           "longpress_actions": {
-            "duration": "light",
             "repeat": [],
-            "start": [
-              {
-                "text": "４",
-                "type": "input"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -747,14 +679,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "々",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -774,14 +700,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "：",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -801,14 +721,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "・",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -828,14 +742,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "；",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -873,14 +781,8 @@
             }
           },
           "longpress_actions": {
-            "duration": "light",
             "repeat": [],
-            "start": [
-              {
-                "text": "５",
-                "type": "input"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -898,14 +800,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＠",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -925,14 +821,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＆",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -952,14 +842,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＃",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -979,14 +863,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "｜",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1024,14 +902,8 @@
             }
           },
           "longpress_actions": {
-            "duration": "light",
             "repeat": [],
-            "start": [
-              {
-                "text": "６",
-                "type": "input"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -1049,14 +921,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＜",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1076,14 +942,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＞",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1103,14 +963,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＝",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1130,14 +984,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "≒",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1164,16 +1012,12 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "空白"
+              "text": "Space"
             }
           },
           "longpress_actions": {
             "repeat": [],
-            "start": [
-              {
-                "type": "toggle_cursor_bar"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -1191,18 +1035,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "repeat": [
-                    {
-                      "text": "　",
-                      "type": "input"
-                    }
-                  ],
-                  "start": [
-                    {
-                      "text": "　",
-                      "type": "input"
-                    }
-                  ]
+                  "repeat": [],
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1269,9 +1103,15 @@
       {
         "key": {
           "design": {
-            "color": "special",
+            "color": "normal",
             "label": {
-              "text": "kana"
+              "directions": {
+                "bottom": ">",
+                "right": "\"",
+                "top": "`"
+              },
+              "main": "@",
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {
@@ -1280,12 +1120,75 @@
           },
           "press_actions": [
             {
-              "identifier": "kana",
-              "tab_type": "custom",
-              "type": "move_tab"
+              "text": "@",
+              "type": "input"
             }
           ],
-          "variations": []
+          "variations": [
+            {
+              "direction": "top",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "`"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "`",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "right",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "\""
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "\"",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "bottom",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": ">"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": ">",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            }
+          ]
         },
         "key_type": "custom",
         "specifier": {
@@ -1312,14 +1215,8 @@
             }
           },
           "longpress_actions": {
-            "duration": "light",
             "repeat": [],
-            "start": [
-              {
-                "text": "７",
-                "type": "input"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -1337,14 +1234,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "⭕️",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1364,14 +1255,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "❤️",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1391,14 +1276,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "⭐️",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1418,14 +1297,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＊",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1463,14 +1336,8 @@
             }
           },
           "longpress_actions": {
-            "duration": "light",
             "repeat": [],
-            "start": [
-              {
-                "text": "８",
-                "type": "input"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -1488,17 +1355,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "｛｝",
-                      "type": "input"
-                    },
-                    {
-                      "type": "complete"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1518,17 +1376,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "［］",
-                      "type": "input"
-                    },
-                    {
-                      "type": "complete"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1548,17 +1397,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "（）",
-                      "type": "input"
-                    },
-                    {
-                      "type": "complete"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1578,17 +1418,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "〈〉",
-                      "type": "input"
-                    },
-                    {
-                      "type": "complete"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1626,14 +1457,8 @@
             }
           },
           "longpress_actions": {
-            "duration": "light",
             "repeat": [],
-            "start": [
-              {
-                "text": "９",
-                "type": "input"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -1651,14 +1476,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＼",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1678,14 +1497,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "／",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1705,14 +1518,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＾",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1732,14 +1539,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＿",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1766,7 +1567,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "改行"
+              "text": "ENTER"
             }
           },
           "longpress_actions": {
@@ -1775,8 +1576,7 @@
           },
           "press_actions": [
             {
-              "text": "\n",
-              "type": "input"
+              "type": "complete"
             }
           ],
           "variations": [
@@ -1785,7 +1585,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "text": "ENTER"
+                    "text": "Return"
                   }
                 },
                 "longpress_actions": {
@@ -1794,7 +1594,8 @@
                 },
                 "press_actions": [
                   {
-                    "type": "complete"
+                    "text": "\n",
+                    "type": "input"
                   }
                 ]
               },
@@ -1808,36 +1609,6 @@
           "width": 1,
           "x": 4,
           "y": 2
-        },
-        "specifier_type": "grid_fit"
-      },
-      {
-        "key": {
-          "design": {
-            "color": "special",
-            "label": {
-              "system_image": "face.smiling"
-            }
-          },
-          "longpress_actions": {
-            "repeat": [],
-            "start": []
-          },
-          "press_actions": [
-            {
-              "identifier": "emoji_tab",
-              "tab_type": "system",
-              "type": "move_tab"
-            }
-          ],
-          "variations": []
-        },
-        "key_type": "custom",
-        "specifier": {
-          "height": 1,
-          "width": 1,
-          "x": 0,
-          "y": 3
         },
         "specifier_type": "grid_fit"
       },
@@ -1941,14 +1712,8 @@
             }
           },
           "longpress_actions": {
-            "duration": "light",
             "repeat": [],
-            "start": [
-              {
-                "text": "０",
-                "type": "input"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -1966,17 +1731,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＇",
-                      "type": "input"
-                    },
-                    {
-                      "type": "complete"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -1996,14 +1752,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＠",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -2023,17 +1773,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "＂",
-                      "type": "input"
-                    },
-                    {
-                      "type": "complete"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -2064,14 +1805,8 @@
             }
           },
           "longpress_actions": {
-            "duration": "light",
             "repeat": [],
-            "start": [
-              {
-                "text": "，",
-                "type": "input"
-              }
-            ]
+            "start": []
           },
           "press_actions": [
             {
@@ -2089,14 +1824,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "．",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -2116,14 +1845,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "？",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {
@@ -2143,14 +1866,8 @@
                   }
                 },
                 "longpress_actions": {
-                  "duration": "light",
                   "repeat": [],
-                  "start": [
-                    {
-                      "text": "！",
-                      "type": "input"
-                    }
-                  ]
+                  "start": []
                 },
                 "press_actions": [
                   {

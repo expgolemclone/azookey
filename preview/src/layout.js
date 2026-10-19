@@ -1,22 +1,21 @@
 export const directions = [
-  { value: 'top', label: '上' },
-  { value: 'left', label: '左' },
-  { value: 'right', label: '右' },
-  { value: 'bottom', label: '下' },
+  { value: 'top', label: 'Up' },
+  { value: 'left', label: 'Left' },
+  { value: 'right', label: 'Right' },
+  { value: 'bottom', label: 'Down' },
 ];
 
 const symbolLabels = {
   'chevron.left': '←',
   'chevron.right': '→',
-  'chevron.left.2': '行頭',
-  'chevron.right.2': '行末',
-  'delete.left': '削除',
-  'delete.left.fill': '全削除',
-  'doc.on.clipboard': '貼付',
-  'face.smiling': '絵文字',
-  'keyboard.chevron.compact.down.fill': '閉じる',
-  'keyboard.onehanded.right.fill': '片手',
-  'list.bullet.clipboard': '履歴',
+  'chevron.left.2': 'Line start',
+  'chevron.right.2': 'Line end',
+  'delete.left': 'Delete',
+  'delete.left.fill': 'Smart delete',
+  'doc.on.clipboard': 'Paste',
+  'face.smiling': 'Emoji',
+  'keyboard.chevron.compact.down.fill': 'Hide',
+  'list.bullet.clipboard': 'History',
 };
 
 export function labelText(label) {
@@ -36,25 +35,29 @@ export function keyLabel(entry) {
     if (entry.key.type !== 'flick_kogaki') {
       throw new Error(`Unsupported system key: ${entry.key.type}`);
     }
-    return '小/濁';
+    return 'Small/Voiced';
   }
   return labelText(entry.key.design.label);
 }
 
 export function gridRows(layout) {
-  const { type, column_count } = layout.interface.key_layout;
+  const { type, row_count, column_count } = layout.interface.key_layout;
   if (type !== 'grid_fit') throw new Error(`Unsupported layout: ${type}`);
   return Array.from({ length: column_count }, (_, y) =>
-    layout.interface.keys
-      .filter((entry) => entry.specifier.y === y)
-      .toSorted((left, right) => left.specifier.x - right.specifier.x),
+    Array.from({ length: row_count }, (_, x) => {
+      const entry = layout.interface.keys.find(({ specifier: position }) =>
+        x >= position.x && x < position.x + position.width
+        && y >= position.y && y < position.y + position.height);
+      if (entry && (entry.specifier.x !== x || entry.specifier.y !== y)) return null;
+      return { x, y, entry: entry ?? null };
+    }).filter((cell) => cell !== null),
   );
 }
 
 export function keyVariants(entry) {
   if (entry.key_type === 'system') return [];
   return [
-    { direction: 'center', label: '中央', key: entry.key },
+    { direction: 'center', label: 'Center', key: entry.key },
     ...directions.flatMap(({ value, label }) => {
       const variation = entry.key.variations.find((item) => item.direction === value);
       return variation ? [{ direction: value, label, key: variation.key }] : [];
@@ -63,7 +66,7 @@ export function keyVariants(entry) {
 }
 
 export function actionsText(actions) {
-  if (actions.length === 0) return 'なし';
+  if (actions.length === 0) return 'None';
   return actions.map(({ type, ...parameters }) => {
     const argumentsText = Object.entries(parameters)
       .map(([name, value]) => `${name}=${JSON.stringify(value)}`)

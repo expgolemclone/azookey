@@ -2,9 +2,10 @@ from collections import Counter
 from copy import deepcopy
 import json
 from pathlib import Path
-from string import ascii_letters
+from string import ascii_lowercase
 import unittest
 from unittest.mock import patch
+from unicodedata import category, east_asian_width
 
 
 REPOSITORY = Path(__file__).resolve().parents[1]
@@ -18,24 +19,21 @@ ACTION_FIELDS = {
     "move_tab": {"tab_type": str, "identifier": str},
     "replace_last_characters": {"table": dict},
     **{name: {} for name in (
-        "complete", "dismiss_keyboard", "enable_resizing_mode", "paste",
-        "smart_delete_default", "toggle_caps_lock_state", "toggle_cursor_bar",
+        "complete", "dismiss_keyboard", "paste",
+        "smart_delete_default", "toggle_caps_lock_state",
     )},
 }
 CONTROL_ACTIONS = {
     ("system_image", "delete.left"): [{"type": "delete", "count": 1}],
     ("system_image", "chevron.left"): [{"type": "move_cursor", "count": -1}],
-    ("system_image", "face.smiling"): [
-        {"type": "move_tab", "tab_type": "system", "identifier": "emoji_tab"},
-    ],
-    ("text", "空白"): [{"type": "input", "text": " "}],
-    ("text", "改行"): [{"type": "input", "text": "\n"}],
+    ("text", "Space"): [{"type": "input", "text": " "}],
+    ("text", "ENTER"): [{"type": "complete"}],
 }
 CONTROL_POSITIONS = {
     ("system_image", "delete.left"): (4, 0, 1, 1),
-    ("system_image", "face.smiling"): (0, 3, 1, 1),
-    ("text", "空白"): (4, 1, 1, 1),
-    ("text", "改行"): (4, 2, 1, 2),
+    ("system_image", "chevron.left"): (0, 1, 1, 1),
+    ("text", "Space"): (4, 1, 1, 1),
+    ("text", "ENTER"): (4, 2, 1, 2),
 }
 
 
@@ -77,16 +75,6 @@ def key_behavior(key):
             ),
         )
     return behavior
-
-
-def is_text_alternative(longpress):
-    return (
-        bool(longpress["start"])
-        and not longpress["repeat"]
-        and any(action["type"] == "input" for action in longpress["start"])
-        and all(action["type"] in {"input", "complete"}
-                for action in longpress["start"])
-    )
 
 
 def outward_side_flicks(layout):
@@ -175,9 +163,7 @@ class LayoutTests(unittest.TestCase):
         self.assertTrue(key["press_actions"])
         self.assert_action_contract(key["press_actions"])
         longpress = key["longpress_actions"]
-        self.assertLessEqual(set(longpress), {"start", "repeat", "duration"})
-        self.assertGreaterEqual(set(longpress), {"start", "repeat"})
-        self.assertIn(longpress.get("duration", "normal"), {"normal", "light"})
+        self.assertEqual(set(longpress), {"start", "repeat"})
         self.assert_action_contract(longpress["start"])
         self.assert_action_contract(longpress["repeat"])
         if not variation:
@@ -189,13 +175,13 @@ class LayoutTests(unittest.TestCase):
                 self.assert_key_contract(flick["key"], variation=True)
 
     def test_layout_set_and_supported_format(self):
-        self.assertEqual(set(self.layouts), {"abc", "kana", "num"})
+        self.assertEqual(set(self.layouts), {"eng", "ja", "num"})
         for name, layout in self.layouts.items():
             with self.subTest(layout=name):
                 self.assertEqual(set(layout), {"identifier", "input_style", "language", "metadata", "interface"})
                 self.assertEqual(layout["identifier"], name)
                 self.assertEqual(layout["input_style"], "direct")
-                self.assertEqual(layout["language"], "en_US" if name == "abc" else "ja_JP")
+                self.assertEqual(layout["language"], "en_US" if name == "eng" else "ja_JP")
                 self.assertEqual(layout["metadata"], {"custard_version": "1.2", "display_name": name})
                 interface = layout["interface"]
                 self.assertEqual(set(interface), {"key_layout", "key_style", "keys"})
@@ -210,12 +196,12 @@ class LayoutTests(unittest.TestCase):
                         self.assertIs(type(value), int)
                     self.assertIn(entry["key_type"], {"custom", "system"})
                     if entry["key_type"] == "system":
-                        self.assertEqual(name, "kana")
+                        self.assertEqual(name, "ja")
                         self.assertEqual(entry["key"], {"type": "flick_kogaki"})
                     else:
                         self.assert_key_contract(entry["key"])
 
-    def test_grid_is_fully_tiled_without_overlaps(self):
+    def test_grid_keeps_only_bottom_left_empty_without_overlaps(self):
         for name, layout in self.layouts.items():
             cells = Counter()
             for entry in layout["interface"]["keys"]:
@@ -231,7 +217,8 @@ class LayoutTests(unittest.TestCase):
                                  for x in range(position["x"], position["x"] + position["width"])
                                  for y in range(position["y"], position["y"] + position["height"]))
             with self.subTest(layout=name):
-                self.assertEqual(cells, Counter({(x, y): 1 for x in range(5) for y in range(4)}))
+                self.assertEqual(cells, Counter({(x, y): 1 for x in range(5) for y in range(4)
+                                                 if (x, y) != (0, 3)}))
 
     def test_shared_controls_are_present_correct_and_consistent(self):
         for label, actions in CONTROL_ACTIONS.items():
@@ -244,16 +231,73 @@ class LayoutTests(unittest.TestCase):
                     entry = entries[0]
                     self.assertEqual(entry["key"]["press_actions"], actions)
                     position = tuple(entry["specifier"][field] for field in ("x", "y", "width", "height"))
-                    expected = ((0, {"num": 0, "abc": 1, "kana": 2}[name], 1, 1)
-                                if label == ("system_image", "chevron.left") else CONTROL_POSITIONS[label])
-                    self.assertEqual(position, expected)
+                    self.assertEqual(position, CONTROL_POSITIONS[label])
                     behavior = key_behavior(entry["key"])
                     if reference is None:
                         reference = behavior
                     self.assertEqual(behavior, reference)
-        system_keys = [entry["key"] for entry in self.layouts["kana"]["interface"]["keys"]
+        system_keys = [entry["key"] for entry in self.layouts["ja"]["interface"]["keys"]
                        if entry["key_type"] == "system"]
         self.assertEqual(system_keys, [{"type": "flick_kogaki"}])
+
+    def test_top_left_consolidates_layout_switches_and_emoji(self):
+        for name, layout in self.layouts.items():
+            menu = next(entry["key"] for entry in layout["interface"]["keys"]
+                        if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 0)
+            with self.subTest(layout=name):
+                self.assertEqual(menu, {
+                    "design": {"color": "special", "label": {
+                        "type": "main_and_directions", "main": "Emoji",
+                        "directions": {"top": "num", "right": "eng", "bottom": "ja"},
+                    }},
+                    "press_actions": [{"type": "move_tab", "tab_type": "system", "identifier": "emoji_tab"}],
+                    "longpress_actions": {"start": [], "repeat": []},
+                    "variations": [
+                        {"type": "flick_variation", "direction": direction, "key": {
+                            "design": {"label": {"text": target}},
+                            "press_actions": [{"type": "move_tab", "tab_type": "custom", "identifier": target}],
+                            "longpress_actions": {"start": [], "repeat": []},
+                        }}
+                        for direction, target in (("top", "num"), ("right", "eng"), ("bottom", "ja"))
+                    ],
+                })
+                emoji_links = [action for action in objects(layout)
+                               if action.get("type") == "move_tab" and action["identifier"] == "emoji_tab"]
+                self.assertEqual(len(emoji_links), 1)
+
+    def test_left_column_symbol_key_has_all_four_narrow_symbols(self):
+        for name, layout in self.layouts.items():
+            symbols = next(entry["key"] for entry in layout["interface"]["keys"]
+                           if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 2)
+            with self.subTest(layout=name):
+                self.assertEqual(symbols["design"], {"color": "normal", "label": {
+                    "type": "main_and_directions", "main": "@",
+                    "directions": {"top": "`", "right": '"', "bottom": ">"},
+                }})
+                self.assertEqual(symbols["press_actions"], [{"type": "input", "text": "@"}])
+                self.assertEqual(symbols["longpress_actions"], {"start": [], "repeat": []})
+                self.assertEqual({flick["direction"]: flick["key"] for flick in symbols["variations"]}, {
+                    direction: {
+                        "design": {"label": {"text": text}},
+                        "press_actions": [{"type": "input", "text": text}],
+                        "longpress_actions": {"start": [], "repeat": []},
+                    }
+                    for direction, text in (("top", "`"), ("right", '"'), ("bottom", ">"))
+                })
+
+    def test_enter_left_flick_inserts_newline_without_hold_actions(self):
+        for name, layout in self.layouts.items():
+            enter = next(entry["key"] for entry in layout["interface"]["keys"]
+                         if entry["specifier"]["x"] == 4 and entry["specifier"]["y"] == 2)
+            with self.subTest(layout=name):
+                self.assertEqual(enter["longpress_actions"], {"start": [], "repeat": []})
+                self.assertEqual(enter["variations"], [{
+                    "type": "flick_variation", "direction": "left", "key": {
+                        "design": {"label": {"text": "Return"}},
+                        "press_actions": [{"type": "input", "text": "\n"}],
+                        "longpress_actions": {"start": [], "repeat": []},
+                    },
+                }])
 
     def test_tab_links_are_complete_valid_and_labelled(self):
         for name, layout in self.layouts.items():
@@ -268,19 +312,69 @@ class LayoutTests(unittest.TestCase):
                             self.assertEqual(primary_label(key), ("text", action["identifier"]))
                             targets[action["identifier"]] += 1
             with self.subTest(layout=name):
-                self.assertEqual(targets, Counter({target: 1 for target in self.layouts if target != name}))
+                self.assertEqual(targets, Counter({target: 1 for target in self.layouts}))
 
     def test_required_characters_remain_reachable(self):
         required = {
-            "abc": set(ascii_letters),
-            "kana": set("あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんー"
-                        "ぁぃぅぇぉゃゅょゎがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ"),
-            "num": set("0123456789") | {chr(0xFF10 + value) for value in range(10)},
+            "eng": set(ascii_lowercase),
+            "ja": set("あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんー"),
+            "num": set("0123456789"),
         }
         for name, layout in self.layouts.items():
-            inputs = {action["text"] for action in objects(layout) if action.get("type") == "input"}
+            inputs = {action["text"] for key in objects(layout) if "press_actions" in key
+                      for action in key["press_actions"] if action["type"] == "input"}
             with self.subTest(layout=name):
-                self.assertFalse((required[name] | {" ", "\t", "\n", "\u3000"}) - inputs)
+                self.assertFalse((required[name] | {" ", "\t", "\n", ",", ".", "?", "!"}) - inputs)
+        self.assertIn({"type": "toggle_caps_lock_state"}, list(objects(self.layouts["eng"])))
+        self.assertIn({"type": "flick_kogaki"}, list(objects(self.layouts["ja"])))
+
+    def test_fullwidth_forms_and_wide_punctuation_are_absent(self):
+        for name, layout in self.layouts.items():
+            characters = set(json.dumps(layout, ensure_ascii=False))
+            forbidden = {f"U+{ord(char):04X}" for char in characters
+                         if east_asian_width(char) == "F"
+                         or east_asian_width(char) == "W" and category(char).startswith("P")}
+            with self.subTest(layout=name):
+                self.assertEqual(forbidden, set())
+
+    def test_delete_flicks_only_smart_delete_or_hide(self):
+        for name, layout in self.layouts.items():
+            delete = next(entry["key"] for entry in layout["interface"]["keys"]
+                          if entry["specifier"]["x"] == 4 and entry["specifier"]["y"] == 0)
+            with self.subTest(layout=name):
+                self.assertEqual({flick["direction"]: flick["key"]["press_actions"]
+                                  for flick in delete["variations"]}, {
+                    "left": [{"type": "smart_delete_default"}],
+                    "bottom": [{"type": "dismiss_keyboard"}],
+                })
+
+    def test_english_word_shortcuts_follow_frequency_ranking(self):
+        # Robyn Speer, wordfreq 3.1.1, English large list (CC BY-SA 4.0).
+        # https://pypi.org/project/wordfreq/3.1.1/; top 26 tokens, minus a/i.
+        expected = (
+            "the to and of in is for that you it on with this was be as are "
+            "have at he not by but from"
+        ).split()
+        words = []
+        entries = sorted(self.layouts["eng"]["interface"]["keys"],
+                         key=lambda entry: (entry["specifier"]["y"], entry["specifier"]["x"]))
+        for entry in entries:
+            key = entry["key"]
+            label = key["design"]["label"]
+            if len(label.get("main", "")) != 1:
+                continue
+            flicks = {flick["direction"]: flick["key"] for flick in key["variations"]}
+            for direction in ("top", "left", "right", "bottom"):
+                if direction not in flicks:
+                    continue
+                flick = flicks[direction]
+                word = primary_label(flick)[1]
+                if len(word) <= 1:
+                    continue
+                words.append(word)
+                with self.subTest(key=label["main"], direction=direction, word=word):
+                    self.assertEqual(flick["press_actions"], [{"type": "input", "text": word + " "}])
+        self.assertEqual(words, expected)
 
     def test_directional_hints_match_their_actions(self):
         for name, layout in self.layouts.items():
@@ -289,7 +383,8 @@ class LayoutTests(unittest.TestCase):
                     continue
                 key = entry["key"]
                 label = key["design"]["label"]
-                if label.get("type") != "main_and_directions":
+                if (label.get("type") != "main_and_directions"
+                        or key["press_actions"][0]["type"] == "move_tab"):
                     continue
                 with self.subTest(layout=name, position=entry["specifier"]):
                     center_actions = (
@@ -306,14 +401,12 @@ class LayoutTests(unittest.TestCase):
                             {"type": "input", "text": hint.lower() + (" " if word else "")},
                         ])
 
-    def test_longpress_timing_matches_its_purpose(self):
+    def test_all_longpress_actions_are_disabled(self):
         for name, layout in self.layouts.items():
             for key in objects(layout):
                 if "longpress_actions" in key:
-                    longpress = key["longpress_actions"]
                     with self.subTest(layout=name, label=key["design"]["label"]):
-                        expected = "light" if is_text_alternative(longpress) else "normal"
-                        self.assertEqual(longpress.get("duration", "normal"), expected)
+                        self.assertEqual(key["longpress_actions"], {"start": [], "repeat": []})
 
     def test_flick_directions_are_unique_and_stay_on_screen(self):
         for name, layout in self.layouts.items():
@@ -333,7 +426,7 @@ class ValidationRegressionTests(unittest.TestCase):
                         if entry["specifier"]["x"] == x and entry["specifier"]["y"] == y)
 
         def overlap(layouts):
-            entry = next(entry for entry in layouts["abc"]["interface"]["keys"]
+            entry = next(entry for entry in layouts["eng"]["interface"]["keys"]
                          if entry["specifier"]["x"] == 2 and entry["specifier"]["y"] == 1)
             entry["specifier"]["x"] = 1
 
@@ -343,37 +436,120 @@ class ValidationRegressionTests(unittest.TestCase):
                 if entry["specifier"]["x"] != 4 or entry["specifier"]["y"] != 0
             ]
 
+        def lower_frequency_word(layouts):
+            parent = key(layouts, "eng", 1, 0)
+            parent["design"]["label"]["directions"]["top"] = "why"
+            flick = next(item["key"] for item in parent["variations"] if item["direction"] == "top")
+            flick["design"]["label"]["text"] = "why"
+            flick["press_actions"][0]["text"] = "why "
+
         mutations = [
-            ("grid_is_fully_tiled_without_overlaps", "overlapping keys", overlap),
+            ("grid_keeps_only_bottom_left_empty_without_overlaps", "overlapping keys", overlap),
+            ("grid_keeps_only_bottom_left_empty_without_overlaps", "unexpected gap", remove_delete),
+            ("grid_keeps_only_bottom_left_empty_without_overlaps", "occupied bottom left",
+             lambda layouts: layouts["num"]["interface"]["keys"].append({
+                 "specifier": {"x": 0, "y": 3, "width": 1, "height": 1},
+             })),
+            ("top_left_consolidates_layout_switches_and_emoji", "missing direct layout flick",
+             lambda layouts: key(layouts, "eng", 0, 0)["variations"].pop()),
+            ("top_left_consolidates_layout_switches_and_emoji", "missing up flick",
+             lambda layouts: key(layouts, "num", 0, 0)["variations"].pop(0)),
+            ("top_left_consolidates_layout_switches_and_emoji", "layout-dependent flick target",
+             lambda layouts: key(layouts, "ja", 0, 0)["variations"][0]["key"]["press_actions"][0].update(identifier="eng")),
+            ("top_left_consolidates_layout_switches_and_emoji", "wrong emoji tap",
+             lambda layouts: key(layouts, "eng", 0, 0)["press_actions"][0].update(identifier="clipboard_history_tab")),
+            ("left_column_symbol_key_has_all_four_narrow_symbols", "missing symbol",
+             lambda layouts: key(layouts, "num", 0, 2)["variations"].pop()),
+            ("left_column_symbol_key_has_all_four_narrow_symbols", "wrong symbol input",
+             lambda layouts: key(layouts, "eng", 0, 2)["press_actions"][0].update(text="!")),
+            ("shared_controls_are_present_correct_and_consistent", "cursor in wrong row",
+             lambda layouts: next(entry for entry in layouts["ja"]["interface"]["keys"]
+                                  if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 1)["specifier"].update(y=2)),
             ("required_characters_remain_reachable", "missing lowercase b",
-             lambda layouts: key(layouts, "abc", 3, 2)["variations"][0]["key"]["press_actions"][0].update(text="s")),
+             lambda layouts: key(layouts, "eng", 3, 2)["variations"][0]["key"]["press_actions"][0].update(text="s")),
+            ("required_characters_remain_reachable", "missing caps control",
+             lambda layouts: key(layouts, "eng", 1, 3).update(press_actions=[])),
+            ("required_characters_remain_reachable", "missing small/voiced control",
+             lambda layouts: key(layouts, "ja", 1, 3).update(type="flick_space")),
+            ("english_word_shortcuts_follow_frequency_ranking", "lower frequency word", lower_frequency_word),
+            ("english_word_shortcuts_follow_frequency_ranking", "missing word trailing space",
+             lambda layouts: key(layouts, "eng", 1, 0)["variations"][0]["key"]["press_actions"][0].update(text="the")),
+            ("all_longpress_actions_are_disabled", "letter hold",
+             lambda layouts: key(layouts, "eng", 1, 0)["longpress_actions"]["start"].append(
+                 {"type": "input", "text": "R"})),
+            ("all_longpress_actions_are_disabled", "word flick hold",
+             lambda layouts: key(layouts, "eng", 1, 0)["variations"][0]["key"]["longpress_actions"]["start"].append(
+                 {"type": "input", "text": "The "})),
+            ("all_longpress_actions_are_disabled", "kana flick hold",
+             lambda layouts: key(layouts, "ja", 1, 0)["variations"][0]["key"]["longpress_actions"]["start"].append(
+                 {"type": "input", "text": "ぃ"})),
+            ("all_longpress_actions_are_disabled", "delete repeat",
+             lambda layouts: key(layouts, "num", 4, 0)["longpress_actions"]["repeat"].append(
+                 {"type": "delete", "count": 1})),
+            ("all_longpress_actions_are_disabled", "cursor flick repeat",
+             lambda layouts: key(layouts, "num", 0, 1)["variations"][0]["key"]["longpress_actions"]["repeat"].append(
+                 {"type": "move_cursor", "count": 1})),
+            ("all_longpress_actions_are_disabled", "space hold",
+             lambda layouts: key(layouts, "ja", 4, 1)["longpress_actions"]["start"].append(
+                 {"type": "toggle_cursor_bar"})),
             ("directional_hints_match_their_actions", "wrong flick hint",
-             lambda layouts: key(layouts, "abc", 1, 0)["design"]["label"]["directions"].update(top="why")),
+             lambda layouts: key(layouts, "eng", 1, 0)["design"]["label"]["directions"].update(top="why")),
             ("directional_hints_match_their_actions", "wrong flick input",
-             lambda layouts: key(layouts, "abc", 1, 0)["variations"][0]["key"]["press_actions"][0].update(text="why ")),
+             lambda layouts: key(layouts, "eng", 1, 0)["variations"][0]["key"]["press_actions"][0].update(text="why ")),
             ("layout_set_and_supported_format", "unsupported action",
-             lambda layouts: key(layouts, "abc", 1, 0)["press_actions"][0].update(type="inptu")),
+             lambda layouts: key(layouts, "eng", 1, 0)["press_actions"][0].update(type="inptu")),
+            ("layout_set_and_supported_format", "retired resize action",
+             lambda layouts: key(layouts, "eng", 0, 0)["press_actions"].append(
+                 {"type": "enable_resizing_mode"})),
+            ("fullwidth_forms_and_wide_punctuation_are_absent", "fullwidth digit input",
+             lambda layouts: key(layouts, "num", 1, 0)["press_actions"][0].update(text="\uff11")),
+            ("fullwidth_forms_and_wide_punctuation_are_absent", "fullwidth space input",
+             lambda layouts: key(layouts, "eng", 4, 1)["press_actions"][0].update(text="\u3000")),
+            ("fullwidth_forms_and_wide_punctuation_are_absent", "fullwidth punctuation label",
+             lambda layouts: key(layouts, "ja", 3, 3)["design"]["label"].update(text="\uff1f")),
+            ("fullwidth_forms_and_wide_punctuation_are_absent", "wide punctuation input",
+             lambda layouts: key(layouts, "ja", 3, 3)["press_actions"][0].update(text="\u3002")),
+            ("fullwidth_forms_and_wide_punctuation_are_absent", "fullwidth replacement output",
+             lambda layouts: key(layouts, "num", 1, 3)["press_actions"][0]["table"].update({"1": "\uff11"})),
+            ("delete_flicks_only_smart_delete_or_hide", "extra delete flick",
+             lambda layouts: key(layouts, "num", 4, 0)["variations"].append({
+                 "direction": "top", "key": {"press_actions": [{"type": "dismiss_keyboard"}]},
+             })),
             ("layout_set_and_supported_format", "invalid action parameter",
              lambda layouts: key(layouts, "num", 4, 0)["press_actions"][0].update(count="1")),
             ("layout_set_and_supported_format", "unsupported language",
-             lambda layouts: layouts["abc"].update(language="zz_ZZ")),
+             lambda layouts: layouts["eng"].update(language="zz_ZZ")),
             ("layout_set_and_supported_format", "wrong key style",
              lambda layouts: layouts["num"]["interface"].update(key_style="pc_style")),
+            ("layout_set_and_supported_format", "obsolete English identifier",
+             lambda layouts: layouts["eng"].update(identifier="abc")),
+            ("layout_set_and_supported_format", "obsolete Japanese display name",
+             lambda layouts: layouts["ja"]["metadata"].update(display_name="kana")),
             ("shared_controls_are_present_correct_and_consistent", "missing delete control", remove_delete),
             ("shared_controls_are_present_correct_and_consistent", "renamed delete control",
              lambda layouts: key(layouts, "num", 4, 0)["design"]["label"].update(system_image="trash")),
             ("shared_controls_are_present_correct_and_consistent", "changed control action",
              lambda layouts: key(layouts, "num", 4, 0)["press_actions"][0].update(count=2)),
+            ("shared_controls_are_present_correct_and_consistent", "newline on enter tap",
+             lambda layouts: key(layouts, "num", 4, 2).update(
+                 press_actions=[{"type": "input", "text": "\n"}])),
+            ("enter_left_flick_inserts_newline_without_hold_actions", "completion on return flick",
+             lambda layouts: key(layouts, "num", 4, 2)["variations"][0]["key"].update(
+                 press_actions=[{"type": "complete"}])),
             ("tab_links_are_complete_valid_and_labelled", "obsolete words tab",
-             lambda layouts: key(layouts, "abc", 0, 0)["press_actions"][0].update(identifier="words")),
-            ("layout_set_and_supported_format", "invalid duration",
-             lambda layouts: key(layouts, "abc", 1, 0)["longpress_actions"].update(duration="fast")),
-            ("longpress_timing_matches_its_purpose", "slow text alternative",
-             lambda layouts: key(layouts, "abc", 1, 0)["longpress_actions"].update(duration="normal")),
-            ("longpress_timing_matches_its_purpose", "fast repeating delete",
-             lambda layouts: key(layouts, "num", 4, 0)["longpress_actions"].update(duration="light")),
+             lambda layouts: key(layouts, "eng", 0, 0)["variations"][0]["key"]["press_actions"][0].update(identifier="words")),
+            ("tab_links_are_complete_valid_and_labelled", "obsolete English tab link",
+             lambda layouts: key(layouts, "num", 0, 0)["variations"][1]["key"]["press_actions"][0].update(identifier="abc")),
+            ("tab_links_are_complete_valid_and_labelled", "obsolete Japanese tab link",
+             lambda layouts: key(layouts, "eng", 0, 0)["variations"][2]["key"]["press_actions"][0].update(identifier="kana")),
+            ("tab_links_are_complete_valid_and_labelled", "missing current layout shortcut",
+             lambda layouts: key(layouts, "num", 0, 0)["variations"].pop(0)),
+            ("all_longpress_actions_are_disabled", "obsolete longpress timing",
+             lambda layouts: key(layouts, "eng", 1, 0)["longpress_actions"].update(duration="light")),
+            ("layout_set_and_supported_format", "longpress variation",
+             lambda layouts: key(layouts, "eng", 1, 0)["variations"][0].update(type="longpress_variation")),
             ("layout_set_and_supported_format", "unknown flick direction",
-             lambda layouts: key(layouts, "abc", 1, 0)["variations"][0].update(direction="up")),
+             lambda layouts: key(layouts, "eng", 1, 0)["variations"][0].update(direction="up")),
         ]
         for method, description, mutate in mutations:
             with self.subTest(mutation=description):
@@ -396,7 +572,7 @@ class ValidationRegressionTests(unittest.TestCase):
 
 class BehaviorComparisonTests(unittest.TestCase):
     def test_design_and_flick_order_do_not_change_behavior(self):
-        key = deepcopy(LayoutTests.layouts["abc"]["interface"]["keys"][4]["key"])
+        key = deepcopy(LayoutTests.layouts["eng"]["interface"]["keys"][4]["key"])
         snapshot = deepcopy(key)
         changed = deepcopy(key)
         changed["design"] = {"label": {"text": "New"}, "color": "normal"}
@@ -422,15 +598,6 @@ class BehaviorComparisonTests(unittest.TestCase):
                 changed = deepcopy(original)
                 changed["press_actions"] = actions
                 self.assertNotEqual(key_behavior(original), key_behavior(changed))
-
-    def test_longpress_variation_order_is_preserved(self):
-        key = {"variations": [
-            {"type": "longpress_variation", "key": {"press_actions": [{"type": "input", "text": text}]}}
-            for text in ("a", "b")
-        ]}
-        changed = deepcopy(key)
-        changed["variations"].reverse()
-        self.assertNotEqual(key_behavior(key), key_behavior(changed))
 
 
 class EdgeDetectionTests(unittest.TestCase):
