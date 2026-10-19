@@ -117,9 +117,11 @@ for (const [name, layout] of Object.entries(layouts)) {
     await expect(grid.getByRole('button')).toHaveText(ordered.map(keyLabel));
     expect((await grid.textContent()).replace(/\s/g, '')).toBe(ordered.map(keyLabel).join('').replace(/\s/g, ''));
     await expect(page.getByRole('table')).toHaveCount(0);
-    await expect(keyAt(grid, 0, 3)).toHaveCount(0);
+    await expect(keyAt(grid, 0, 0)).toHaveCount(0);
+    await expect(keyAt(grid, 0, 3)).toHaveText('Layout');
     await expectKeyLabelsToFit(grid);
-    const origin = await keyAt(grid, 0, 0).boundingBox();
+    const origin = await grid.boundingBox();
+    const cell = await keyAt(grid, 1, 0).boundingBox();
     const gap = await grid.evaluate((element) => parseFloat(getComputedStyle(element).gap));
 
     for (const entry of ordered) {
@@ -131,10 +133,10 @@ for (const [name, layout] of Object.entries(layouts)) {
       await expect(button).toHaveCSS('grid-row-start', String(y + 1));
       await expect(button).toHaveCSS('grid-row-end', `span ${height}`);
       const box = await button.boundingBox();
-      expect(box.x).toBeCloseTo(origin.x + x * (origin.width + gap), 1);
-      expect(box.y).toBeCloseTo(origin.y + y * (origin.height + gap), 1);
-      expect(box.width).toBeCloseTo(width * origin.width + (width - 1) * gap, 1);
-      expect(box.height).toBeCloseTo(height * origin.height + (height - 1) * gap, 1);
+      expect(box.x).toBeCloseTo(origin.x + x * (cell.width + gap), 1);
+      expect(box.y).toBeCloseTo(origin.y + y * (cell.height + gap), 1);
+      expect(box.width).toBeCloseTo(width * cell.width + (width - 1) * gap, 1);
+      expect(box.height).toBeCloseTo(height * cell.height + (height - 1) * gap, 1);
       await button.click();
       await expect(button).toHaveAttribute('aria-pressed', 'true');
       await expect(grid.getByRole('button', { pressed: true })).toHaveCount(1);
@@ -201,7 +203,7 @@ test('delete, tab, layout links, and disabled menu taps remain inspectable', asy
     await expect(actionRow(page, 'bottom').getByRole('cell')).toHaveText(['Hide', 'dismiss_keyboard']);
     await keyAt(grid, 4, 1).click();
     await expect(actionRow(page, 'left').getByRole('cell')).toHaveText(['tab', 'input(text="\\t")']);
-    await keyAt(grid, 0, 0).click();
+    await keyAt(grid, 0, 3).click();
     await expect(actionRow(page, 'center').getByRole('cell')).toHaveText(['Layout', 'None']);
     for (const [direction, target] of [['top', 'num'], ['right', 'eng'], ['bottom', 'ja']]) {
       await expect(actionRow(page, direction).getByRole('cell')).toHaveText([
