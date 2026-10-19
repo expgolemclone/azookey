@@ -48,6 +48,7 @@
             }
           },
           "longpress_actions": {
+            "duration": "light",
             "repeat": [],
             "start": [
               {
@@ -72,6 +73,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -98,6 +100,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -124,6 +127,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -150,6 +154,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -187,6 +192,7 @@
             }
           },
           "longpress_actions": {
+            "duration": "light",
             "repeat": [],
             "start": [
               {
@@ -211,6 +217,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -237,6 +244,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -263,6 +271,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -289,6 +298,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -326,6 +336,7 @@
             }
           },
           "longpress_actions": {
+            "duration": "light",
             "repeat": [],
             "start": [
               {
@@ -350,6 +361,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -376,6 +388,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -402,6 +415,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -428,6 +442,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -590,6 +605,7 @@
             }
           },
           "longpress_actions": {
+            "duration": "light",
             "repeat": [],
             "start": [
               {
@@ -614,6 +630,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -640,6 +657,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -666,6 +684,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -692,6 +711,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -729,6 +749,7 @@
             }
           },
           "longpress_actions": {
+            "duration": "light",
             "repeat": [],
             "start": [
               {
@@ -753,6 +774,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -779,6 +801,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -805,6 +828,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -831,6 +855,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -868,6 +893,7 @@
             }
           },
           "longpress_actions": {
+            "duration": "light",
             "repeat": [],
             "start": [
               {
@@ -892,6 +918,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -918,6 +945,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -944,6 +972,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -970,6 +999,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -1347,6 +1377,7 @@
             }
           },
           "longpress_actions": {
+            "duration": "light",
             "repeat": [],
             "start": [
               {
@@ -1371,6 +1402,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -1397,6 +1429,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -1423,6 +1456,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -1449,6 +1483,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -1660,30 +1695,7 @@
               "type": "move_tab"
             }
           ],
-          "variations": [
-            {
-              "direction": "right",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "words"
-                  }
-                },
-                "longpress_actions": {
-                  "repeat": [],
-                  "start": []
-                },
-                "press_actions": [
-                  {
-                    "identifier": "words",
-                    "tab_type": "custom",
-                    "type": "move_tab"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            }
-          ]
+          "variations": []
         },
         "key_type": "custom",
         "specifier": {
@@ -1716,6 +1728,7 @@
             }
           },
           "longpress_actions": {
+            "duration": "light",
             "repeat": [],
             "start": [
               {
@@ -1782,6 +1795,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
@@ -1819,6 +1833,7 @@
             }
           },
           "longpress_actions": {
+            "duration": "light",
             "repeat": [],
             "start": [
               {
@@ -1843,6 +1858,7 @@
                   }
                 },
                 "longpress_actions": {
+                  "duration": "light",
                   "repeat": [],
                   "start": [
                     {
