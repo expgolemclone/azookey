@@ -72,14 +72,26 @@ test('compound labels match input case, caps, and directional text', () => {
   assert.equal(actionsText(r.key.press_actions), 'input(text="r")');
   assert.equal(keyLabel(entryAt('eng', 1, 3)), 'caps');
   assert.deepEqual(keyVariants(r).map(({ direction, key }) => [direction, labelText(key.design.label)]), [
-    ['center', 'r'], ['top', 'the'], ['left', 'to'], ['right', 'and'], ['bottom', 'of'],
+    ['center', 'r'], ['top', 'really'], ['left', 'right'], ['right', 'real'], ['bottom', 'read'],
   ]);
-  const the = keyVariants(r).find(({ direction }) => direction === 'top').key;
-  assert.equal(actionsText(the.press_actions), 'input(text="the ")');
+  const really = keyVariants(r).find(({ direction }) => direction === 'top').key;
+  assert.equal(actionsText(really.press_actions), 'input(text="really ")');
   const one = entryAt('num', 1, 0);
   assert.deepEqual(keyVariants(one).map(({ direction, key }) => [direction, labelText(key.design.label)]), [
     ['center', '1'], ['top', '↑'], ['left', '←'], ['right', '→'], ['bottom', '↓'],
   ]);
+});
+
+test('shared symbol keys preserve Markdown backtick counts and the right-flick greater than', () => {
+  for (const name of Object.keys(layouts)) {
+    const variants = keyVariants(entryAt(name, 0, 2));
+    assert.deepEqual(variants.map(({ direction, key }) => [direction, labelText(key.design.label)]), [
+      ['center', '@'], ['top', '``'], ['right', '>'], ['bottom', '``````'],
+    ]);
+    for (const { key } of variants) {
+      assert.equal(actionsText(key.press_actions), `input(text=${JSON.stringify(labelText(key.design.label))})`);
+    }
+  }
 });
 
 test('system keys are identified without inventing their behavior', () => {

@@ -263,14 +263,14 @@ class LayoutTests(unittest.TestCase):
                     ],
                 })
 
-    def test_left_column_symbol_key_has_all_four_narrow_symbols(self):
+    def test_left_column_symbol_key_keeps_markdown_pairs_and_right_flick(self):
         for name, layout in self.layouts.items():
             symbols = next(entry["key"] for entry in layout["interface"]["keys"]
                            if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 2)
             with self.subTest(layout=name):
                 self.assertEqual(symbols["design"], {"color": "normal", "label": {
                     "type": "main_and_directions", "main": "@",
-                    "directions": {"top": "`", "right": '"', "bottom": ">"},
+                    "directions": {"top": "``", "right": ">", "bottom": "``````"},
                 }})
                 self.assertEqual(symbols["press_actions"], [{"type": "input", "text": "@"}])
                 self.assertEqual(symbols["longpress_actions"], {"start": [], "repeat": []})
@@ -280,7 +280,7 @@ class LayoutTests(unittest.TestCase):
                         "press_actions": [{"type": "input", "text": text}],
                         "longpress_actions": {"start": [], "repeat": []},
                     }
-                    for direction, text in (("top", "`"), ("right", '"'), ("bottom", ">"))
+                    for direction, text in (("top", "``"), ("right", ">"), ("bottom", "``````"))
                 })
 
     def test_enter_left_flick_inserts_newline_without_hold_actions(self):
@@ -348,10 +348,10 @@ class LayoutTests(unittest.TestCase):
 
     def test_english_word_shortcuts_follow_frequency_ranking(self):
         # Robyn Speer, wordfreq 3.1.1, English large list (CC BY-SA 4.0).
-        # https://pypi.org/project/wordfreq/3.1.1/; top 26 tokens, minus a/i.
+        # https://pypi.org/project/wordfreq/3.1.1/; top words per tap initial.
         expected = (
-            "the to and of in is for that you it on with this was be as are "
-            "have at he not by but from"
+            "really right real read of on have he not no new the in is it "
+            "and as are so she like life last love"
         ).split()
         words = []
         entries = sorted(self.layouts["eng"]["interface"]["keys"],
@@ -359,7 +359,7 @@ class LayoutTests(unittest.TestCase):
         for entry in entries:
             key = entry["key"]
             label = key["design"]["label"]
-            if len(label.get("main", "")) != 1:
+            if label.get("main") not in set(ascii_lowercase):
                 continue
             flicks = {flick["direction"]: flick["key"] for flick in key["variations"]}
             for direction in ("top", "left", "right", "bottom"):
@@ -371,6 +371,7 @@ class LayoutTests(unittest.TestCase):
                     continue
                 words.append(word)
                 with self.subTest(key=label["main"], direction=direction, word=word):
+                    self.assertTrue(word.startswith(key["press_actions"][0]["text"]))
                     self.assertEqual(flick["press_actions"], [{"type": "input", "text": word + " "}])
         self.assertEqual(words, expected)
 
@@ -435,12 +436,12 @@ class ValidationRegressionTests(unittest.TestCase):
                 if entry["specifier"]["x"] != 4 or entry["specifier"]["y"] != 0
             ]
 
-        def lower_frequency_word(layouts):
+        def replace_word(layouts, word):
             parent = key(layouts, "eng", 1, 0)
-            parent["design"]["label"]["directions"]["top"] = "why"
+            parent["design"]["label"]["directions"]["top"] = word
             flick = next(item["key"] for item in parent["variations"] if item["direction"] == "top")
-            flick["design"]["label"]["text"] = "why"
-            flick["press_actions"][0]["text"] = "why "
+            flick["design"]["label"]["text"] = word
+            flick["press_actions"][0]["text"] = word + " "
 
         mutations = [
             ("grid_keeps_only_bottom_left_empty_without_overlaps", "overlapping keys", overlap),
@@ -467,10 +468,18 @@ class ValidationRegressionTests(unittest.TestCase):
              lambda layouts: key(layouts, "eng", 1, 0).update(press_actions=[], variations=[])),
             ("layout_set_and_supported_format", "empty flick action",
              lambda layouts: key(layouts, "eng", 1, 0)["variations"][0]["key"].update(press_actions=[])),
-            ("left_column_symbol_key_has_all_four_narrow_symbols", "missing symbol",
+            ("left_column_symbol_key_keeps_markdown_pairs_and_right_flick", "missing symbol",
              lambda layouts: key(layouts, "num", 0, 2)["variations"].pop()),
-            ("left_column_symbol_key_has_all_four_narrow_symbols", "wrong symbol input",
+            ("left_column_symbol_key_keeps_markdown_pairs_and_right_flick", "wrong symbol input",
              lambda layouts: key(layouts, "eng", 0, 2)["press_actions"][0].update(text="!")),
+            ("left_column_symbol_key_keeps_markdown_pairs_and_right_flick", "misplaced greater than",
+             lambda layouts: key(layouts, "ja", 0, 2)["variations"][1].update(direction="bottom")),
+            ("left_column_symbol_key_keeps_markdown_pairs_and_right_flick", "single backtick",
+             lambda layouts: key(layouts, "eng", 0, 2)["variations"][0]["key"]["press_actions"][0].update(text="`")),
+            ("left_column_symbol_key_keeps_markdown_pairs_and_right_flick", "restored double quote",
+             lambda layouts: key(layouts, "num", 0, 2)["variations"][1]["key"]["press_actions"][0].update(text='"')),
+            ("left_column_symbol_key_keeps_markdown_pairs_and_right_flick", "incomplete fenced pair",
+             lambda layouts: key(layouts, "ja", 0, 2)["variations"][2]["key"]["press_actions"][0].update(text="```")),
             ("shared_controls_are_present_correct_and_consistent", "cursor in wrong row",
              lambda layouts: next(entry for entry in layouts["ja"]["interface"]["keys"]
                                   if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 1)["specifier"].update(y=2)),
@@ -482,9 +491,12 @@ class ValidationRegressionTests(unittest.TestCase):
              lambda layouts: key(layouts, "eng", 1, 3).update(press_actions=[])),
             ("required_characters_remain_reachable", "missing small/voiced control",
              lambda layouts: key(layouts, "ja", 1, 3).update(type="flick_space")),
-            ("english_word_shortcuts_follow_frequency_ranking", "lower frequency word", lower_frequency_word),
+            ("english_word_shortcuts_follow_frequency_ranking", "wrong tap initial",
+             lambda layouts: replace_word(layouts, "the")),
+            ("english_word_shortcuts_follow_frequency_ranking", "lower frequency word",
+             lambda layouts: replace_word(layouts, "run")),
             ("english_word_shortcuts_follow_frequency_ranking", "missing word trailing space",
-             lambda layouts: key(layouts, "eng", 1, 0)["variations"][0]["key"]["press_actions"][0].update(text="the")),
+             lambda layouts: key(layouts, "eng", 1, 0)["variations"][0]["key"]["press_actions"][0].update(text="really")),
             ("all_longpress_actions_are_disabled", "letter hold",
              lambda layouts: key(layouts, "eng", 1, 0)["longpress_actions"]["start"].append(
                  {"type": "input", "text": "R"})),

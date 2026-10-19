@@ -1058,9 +1058,9 @@
             "color": "normal",
             "label": {
               "directions": {
-                "bottom": ">",
-                "right": "\"",
-                "top": "`"
+                "bottom": "``````",
+                "right": ">",
+                "top": "``"
               },
               "main": "@",
               "type": "main_and_directions"
@@ -1082,7 +1082,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "text": "`"
+                    "text": "``"
                   }
                 },
                 "longpress_actions": {
@@ -1091,7 +1091,7 @@
                 },
                 "press_actions": [
                   {
-                    "text": "`",
+                    "text": "``",
                     "type": "input"
                   }
                 ]
@@ -1100,27 +1100,6 @@
             },
             {
               "direction": "right",
-              "key": {
-                "design": {
-                  "label": {
-                    "text": "\""
-                  }
-                },
-                "longpress_actions": {
-                  "repeat": [],
-                  "start": []
-                },
-                "press_actions": [
-                  {
-                    "text": "\"",
-                    "type": "input"
-                  }
-                ]
-              },
-              "type": "flick_variation"
-            },
-            {
-              "direction": "bottom",
               "key": {
                 "design": {
                   "label": {
@@ -1134,6 +1113,27 @@
                 "press_actions": [
                   {
                     "text": ">",
+                    "type": "input"
+                  }
+                ]
+              },
+              "type": "flick_variation"
+            },
+            {
+              "direction": "bottom",
+              "key": {
+                "design": {
+                  "label": {
+                    "text": "``````"
+                  }
+                },
+                "longpress_actions": {
+                  "repeat": [],
+                  "start": []
+                },
+                "press_actions": [
+                  {
+                    "text": "``````",
                     "type": "input"
                   }
                 ]
