@@ -80,7 +80,7 @@ test('preview controls use English while kana labels and actions stay Japanese',
   for (const label of ['Space', 'ENTER', 'Delete', 'Small/Voiced', 'あ']) {
     await expect(grid.getByRole('button', { name: `${label}, x=`, exact: false })).toHaveText(label);
   }
-  await expect(grid.locator('td[data-key-position="0,0"]').getByText('Emoji', { exact: true })).toBeVisible();
+  await expect(grid.locator('td[data-key-position="0,0"]').getByText('Layout', { exact: true })).toBeVisible();
   await grid.getByRole('button', { name: 'Space, x=4, y=1', exact: true }).click();
   const actions = page.getByRole('table', { name: 'Center actions', exact: true });
   await expect(actions.getByRole('columnheader')).toHaveText(['Gesture', 'Actions']);
@@ -153,6 +153,30 @@ for (const name of ['eng', 'ja', 'num']) {
   });
 }
 
+test('cursor keys share Space and ENTER special colors', async ({ page }) => {
+  await page.goto('/');
+  for (const name of ['eng', 'ja', 'num']) {
+    await page.getByRole('radiogroup', { name: 'Layout' }).getByText(name, { exact: true }).click();
+    const grid = page.getByRole('table', { name: `${name} key layout`, exact: true });
+    for (const selected of [false, true]) {
+      const colors = [];
+      for (const position of ['0,1', '4,1', '4,2']) {
+        const button = grid.locator(`td[data-key-position="${position}"]`).getByRole('button');
+        if (selected) {
+          await button.click();
+          await expect(button).toHaveAttribute('aria-pressed', 'true');
+        }
+        colors.push(await button.evaluate((element) => {
+          const { backgroundColor, color } = getComputedStyle(element);
+          return { backgroundColor, color };
+        }));
+      }
+      expect(colors[0]).toEqual(colors[1]);
+      expect(colors[0]).toEqual(colors[2]);
+    }
+  }
+});
+
 test('all layouts keep delete and tab flicks without long-press UI', async ({ page }) => {
   await page.goto('/');
   for (const name of ['eng', 'ja', 'num']) {
@@ -171,6 +195,25 @@ test('all layouts keep delete and tab flicks without long-press UI', async ({ pa
   }
 });
 
+test('layout menus disable taps and keep all three layout flicks without emoji', async ({ page }) => {
+  await page.goto('/');
+  for (const name of ['eng', 'ja', 'num']) {
+    await page.getByRole('radiogroup', { name: 'Layout' }).getByText(name, { exact: true }).click();
+    const grid = page.getByRole('table', { name: `${name} key layout`, exact: true });
+    await expect(grid.getByText('Emoji', { exact: true })).toHaveCount(0);
+    await grid.getByRole('button', { name: 'Layout, x=0, y=0', exact: true }).click();
+    await expect(page.getByRole('table', { name: 'Center actions', exact: true }).getByRole('cell')).toHaveText([
+      'Tap', 'None',
+    ]);
+    for (const [direction, target] of [['Up', 'num'], ['Right', 'eng'], ['Down', 'ja']]) {
+      await page.getByRole('button', { name: `${direction}: ${target}`, exact: true }).click();
+      await expect(page.getByRole('table', { name: `${direction} actions`, exact: true }).getByRole('cell')).toHaveText([
+        'Tap', `move_tab(identifier="${target}", tab_type="custom")`,
+      ]);
+    }
+  }
+});
+
 test('switching layouts clears selection and keeps compound labels intact', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'あ, x=1, y=0', exact: true }).click();
@@ -178,8 +221,8 @@ test('switching layouts clears selection and keeps compound labels intact', asyn
   const switcher = page.getByRole('radiogroup', { name: 'Layout' });
   await switcher.getByText('eng', { exact: true }).click();
   await expect(page.getByText('Select the center button of a key.', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'R, x=1, y=0', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Center: R', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'r, x=1, y=0', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Center: r', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'caps, x=1, y=3', exact: true }).click();
   await expect(page.getByRole('table', { name: 'Center actions', exact: true })).toContainText('toggle_caps_lock_state');
   await switcher.getByText('num', { exact: true }).click();
@@ -199,7 +242,7 @@ test('keyboard controls work and narrow screens scroll without overflowing the p
   await expect(page.getByRole('table', { name: 'Center actions', exact: true })).toBeVisible();
   for (const [name, keyName] of [
     ['ja', 'あ, x=1, y=0'],
-    ['eng', 'R, x=1, y=0'],
+    ['eng', 'r, x=1, y=0'],
     ['num', '^_, x=1, y=3'],
   ]) {
     await page.getByRole('radiogroup', { name: 'Layout' }).getByText(name, { exact: true }).click();

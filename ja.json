@@ -19,7 +19,7 @@
                 "right": "eng",
                 "top": "num"
               },
-              "main": "Emoji",
+              "main": "Layout",
               "type": "main_and_directions"
             }
           },
@@ -27,13 +27,7 @@
             "repeat": [],
             "start": []
           },
-          "press_actions": [
-            {
-              "identifier": "emoji_tab",
-              "tab_type": "system",
-              "type": "move_tab"
-            }
-          ],
+          "press_actions": [],
           "variations": [
             {
               "direction": "top",
@@ -527,7 +521,7 @@
       {
         "key": {
           "design": {
-            "color": "normal",
+            "color": "special",
             "label": {
               "system_image": "chevron.left"
             }
@@ -1660,7 +1654,13 @@
           "design": {
             "color": "normal",
             "label": {
-              "text": ",.?!"
+              "directions": {
+                "left": ".",
+                "right": "!",
+                "top": "?"
+              },
+              "main": ",",
+              "type": "main_and_directions"
             }
           },
           "longpress_actions": {

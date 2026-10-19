@@ -66,13 +66,13 @@ test('empty cells retain their coordinates while merged cells are not duplicated
   ]);
 });
 
-test('compound labels preserve case, caps, and directional text', () => {
+test('compound labels match input case, caps, and directional text', () => {
   const r = entryAt('eng', 1, 0);
-  assert.equal(keyLabel(r), 'R');
+  assert.equal(keyLabel(r), 'r');
   assert.equal(actionsText(r.key.press_actions), 'input(text="r")');
   assert.equal(keyLabel(entryAt('eng', 1, 3)), 'caps');
   assert.deepEqual(keyVariants(r).map(({ direction, key }) => [direction, labelText(key.design.label)]), [
-    ['center', 'R'], ['top', 'the'], ['left', 'to'], ['right', 'and'], ['bottom', 'of'],
+    ['center', 'r'], ['top', 'the'], ['left', 'to'], ['right', 'and'], ['bottom', 'of'],
   ]);
   const the = keyVariants(r).find(({ direction }) => direction === 'top').key;
   assert.equal(actionsText(the.press_actions), 'input(text="the ")');
@@ -99,7 +99,6 @@ test('SF Symbols and directions have English labels', () => {
     'delete.left': 'Delete',
     'delete.left.fill': 'Smart delete',
     'doc.on.clipboard': 'Paste',
-    'face.smiling': 'Emoji',
     'keyboard.chevron.compact.down.fill': 'Hide',
     'list.bullet.clipboard': 'History',
   })) {

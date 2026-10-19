@@ -13,7 +13,6 @@ const symbolLabels = {
   'delete.left': 'Delete',
   'delete.left.fill': 'Smart delete',
   'doc.on.clipboard': 'Paste',
-  'face.smiling': 'Emoji',
   'keyboard.chevron.compact.down.fill': 'Hide',
   'list.bullet.clipboard': 'History',
 };

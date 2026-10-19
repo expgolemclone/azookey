@@ -135,7 +135,7 @@ class LayoutTests(unittest.TestCase):
             elif action["type"] == "move_tab":
                 self.assertIn(action["tab_type"], {"custom", "system"})
                 targets = self.layouts if action["tab_type"] == "custom" else {
-                    "emoji_tab", "clipboard_history_tab",
+                    "clipboard_history_tab",
                 }
                 self.assertIn(action["identifier"], targets)
             elif action["type"] == "smart_move_cursor":
@@ -160,7 +160,7 @@ class LayoutTests(unittest.TestCase):
         self.assert_label_contract(key["design"]["label"])
         if not variation:
             self.assertIn(key["design"]["color"], {"normal", "special", "selected", "unimportant"})
-        self.assertTrue(key["press_actions"])
+        self.assertTrue(key["press_actions"] or key.get("variations"))
         self.assert_action_contract(key["press_actions"])
         longpress = key["longpress_actions"]
         self.assertEqual(set(longpress), {"start", "repeat"})
@@ -230,6 +230,7 @@ class LayoutTests(unittest.TestCase):
                     self.assertEqual(len(entries), 1)
                     entry = entries[0]
                     self.assertEqual(entry["key"]["press_actions"], actions)
+                    self.assertEqual(entry["key"]["design"]["color"], "special")
                     position = tuple(entry["specifier"][field] for field in ("x", "y", "width", "height"))
                     self.assertEqual(position, CONTROL_POSITIONS[label])
                     behavior = key_behavior(entry["key"])
@@ -240,17 +241,17 @@ class LayoutTests(unittest.TestCase):
                        if entry["key_type"] == "system"]
         self.assertEqual(system_keys, [{"type": "flick_kogaki"}])
 
-    def test_top_left_consolidates_layout_switches_and_emoji(self):
+    def test_top_left_only_switches_layouts_by_flick(self):
         for name, layout in self.layouts.items():
             menu = next(entry["key"] for entry in layout["interface"]["keys"]
                         if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 0)
             with self.subTest(layout=name):
                 self.assertEqual(menu, {
                     "design": {"color": "special", "label": {
-                        "type": "main_and_directions", "main": "Emoji",
+                        "type": "main_and_directions", "main": "Layout",
                         "directions": {"top": "num", "right": "eng", "bottom": "ja"},
                     }},
-                    "press_actions": [{"type": "move_tab", "tab_type": "system", "identifier": "emoji_tab"}],
+                    "press_actions": [],
                     "longpress_actions": {"start": [], "repeat": []},
                     "variations": [
                         {"type": "flick_variation", "direction": direction, "key": {
@@ -261,9 +262,6 @@ class LayoutTests(unittest.TestCase):
                         for direction, target in (("top", "num"), ("right", "eng"), ("bottom", "ja"))
                     ],
                 })
-                emoji_links = [action for action in objects(layout)
-                               if action.get("type") == "move_tab" and action["identifier"] == "emoji_tab"]
-                self.assertEqual(len(emoji_links), 1)
 
     def test_left_column_symbol_key_has_all_four_narrow_symbols(self):
         for name, layout in self.layouts.items():
@@ -376,30 +374,31 @@ class LayoutTests(unittest.TestCase):
                     self.assertEqual(flick["press_actions"], [{"type": "input", "text": word + " "}])
         self.assertEqual(words, expected)
 
-    def test_directional_hints_match_their_actions(self):
+    def test_input_labels_match_their_actions(self):
+        for name, layout in self.layouts.items():
+            for key in objects(layout):
+                actions = key.get("press_actions", [])
+                if len(actions) != 1 or actions[0]["type"] != "input":
+                    continue
+                text = actions[0]["text"]
+                expected = {" ": "Space", "\t": "tab", "\n": "Return"}.get(text, text.removesuffix(" "))
+                with self.subTest(layout=name, label=key["design"]["label"], input=text):
+                    self.assertEqual(primary_label(key), ("text", expected))
+
+    def test_directional_hints_match_their_flicks(self):
         for name, layout in self.layouts.items():
             for entry in layout["interface"]["keys"]:
                 if entry["key_type"] != "custom":
                     continue
                 key = entry["key"]
                 label = key["design"]["label"]
-                if (label.get("type") != "main_and_directions"
-                        or key["press_actions"][0]["type"] == "move_tab"):
+                if label.get("type") != "main_and_directions":
                     continue
                 with self.subTest(layout=name, position=entry["specifier"]):
-                    center_actions = (
-                        [{"type": "toggle_caps_lock_state"}] if label["main"] == "caps"
-                        else [{"type": "input", "text": label["main"].lower()}]
-                    )
-                    self.assertEqual(key["press_actions"], center_actions)
                     flicks = {flick["direction"]: flick["key"] for flick in key["variations"]}
                     self.assertEqual(set(label["directions"]), set(flicks))
                     for direction, hint in label["directions"].items():
                         self.assertEqual(primary_label(flicks[direction]), ("text", hint))
-                        word = hint.isascii() and hint.isalpha() and len(hint) > 1
-                        self.assertEqual(flicks[direction]["press_actions"], [
-                            {"type": "input", "text": hint.lower() + (" " if word else "")},
-                        ])
 
     def test_all_longpress_actions_are_disabled(self):
         for name, layout in self.layouts.items():
@@ -450,14 +449,24 @@ class ValidationRegressionTests(unittest.TestCase):
              lambda layouts: layouts["num"]["interface"]["keys"].append({
                  "specifier": {"x": 0, "y": 3, "width": 1, "height": 1},
              })),
-            ("top_left_consolidates_layout_switches_and_emoji", "missing direct layout flick",
+            ("top_left_only_switches_layouts_by_flick", "missing direct layout flick",
              lambda layouts: key(layouts, "eng", 0, 0)["variations"].pop()),
-            ("top_left_consolidates_layout_switches_and_emoji", "missing up flick",
+            ("top_left_only_switches_layouts_by_flick", "missing up flick",
              lambda layouts: key(layouts, "num", 0, 0)["variations"].pop(0)),
-            ("top_left_consolidates_layout_switches_and_emoji", "layout-dependent flick target",
+            ("top_left_only_switches_layouts_by_flick", "layout-dependent flick target",
              lambda layouts: key(layouts, "ja", 0, 0)["variations"][0]["key"]["press_actions"][0].update(identifier="eng")),
-            ("top_left_consolidates_layout_switches_and_emoji", "wrong emoji tap",
-             lambda layouts: key(layouts, "eng", 0, 0)["press_actions"][0].update(identifier="clipboard_history_tab")),
+            ("top_left_only_switches_layouts_by_flick", "retired emoji tap",
+             lambda layouts: key(layouts, "eng", 0, 0)["press_actions"].append(
+                 {"type": "move_tab", "tab_type": "system", "identifier": "emoji_tab"})),
+            ("top_left_only_switches_layouts_by_flick", "retired emoji label",
+             lambda layouts: key(layouts, "ja", 0, 0)["design"]["label"].update(main="Emoji")),
+            ("layout_set_and_supported_format", "retired emoji flick",
+             lambda layouts: key(layouts, "num", 0, 0)["variations"][0]["key"]["press_actions"][0].update(
+                 tab_type="system", identifier="emoji_tab")),
+            ("layout_set_and_supported_format", "empty character key",
+             lambda layouts: key(layouts, "eng", 1, 0).update(press_actions=[], variations=[])),
+            ("layout_set_and_supported_format", "empty flick action",
+             lambda layouts: key(layouts, "eng", 1, 0)["variations"][0]["key"].update(press_actions=[])),
             ("left_column_symbol_key_has_all_four_narrow_symbols", "missing symbol",
              lambda layouts: key(layouts, "num", 0, 2)["variations"].pop()),
             ("left_column_symbol_key_has_all_four_narrow_symbols", "wrong symbol input",
@@ -465,6 +474,8 @@ class ValidationRegressionTests(unittest.TestCase):
             ("shared_controls_are_present_correct_and_consistent", "cursor in wrong row",
              lambda layouts: next(entry for entry in layouts["ja"]["interface"]["keys"]
                                   if entry["specifier"]["x"] == 0 and entry["specifier"]["y"] == 1)["specifier"].update(y=2)),
+            ("shared_controls_are_present_correct_and_consistent", "cursor uses normal key color",
+             lambda layouts: key(layouts, "eng", 0, 1)["design"].update(color="normal")),
             ("required_characters_remain_reachable", "missing lowercase b",
              lambda layouts: key(layouts, "eng", 3, 2)["variations"][0]["key"]["press_actions"][0].update(text="s")),
             ("required_characters_remain_reachable", "missing caps control",
@@ -492,10 +503,18 @@ class ValidationRegressionTests(unittest.TestCase):
             ("all_longpress_actions_are_disabled", "space hold",
              lambda layouts: key(layouts, "ja", 4, 1)["longpress_actions"]["start"].append(
                  {"type": "toggle_cursor_bar"})),
-            ("directional_hints_match_their_actions", "wrong flick hint",
+            ("directional_hints_match_their_flicks", "wrong flick hint",
              lambda layouts: key(layouts, "eng", 1, 0)["design"]["label"]["directions"].update(top="why")),
-            ("directional_hints_match_their_actions", "wrong flick input",
+            ("input_labels_match_their_actions", "wrong flick input",
              lambda layouts: key(layouts, "eng", 1, 0)["variations"][0]["key"]["press_actions"][0].update(text="why ")),
+            ("input_labels_match_their_actions", "uppercase center label for lowercase input",
+             lambda layouts: key(layouts, "eng", 1, 0)["design"]["label"].update(main="R")),
+            ("input_labels_match_their_actions", "uppercase flick label for lowercase input",
+             lambda layouts: key(layouts, "eng", 3, 2)["variations"][0]["key"]["design"]["label"].update(text="B")),
+            ("input_labels_match_their_actions", "misleading punctuation group label",
+             lambda layouts: key(layouts, "ja", 3, 3)["design"]["label"].update(main=",.?!")),
+            ("input_labels_match_their_actions", "wrong kana flick label",
+             lambda layouts: key(layouts, "ja", 1, 0)["variations"][0]["key"]["design"]["label"].update(text="う")),
             ("layout_set_and_supported_format", "unsupported action",
              lambda layouts: key(layouts, "eng", 1, 0)["press_actions"][0].update(type="inptu")),
             ("layout_set_and_supported_format", "retired resize action",
