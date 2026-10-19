@@ -64,7 +64,7 @@ function App() {
             aria-label={`${activeId}のキー配置`}
             withTableBorder
             withColumnBorders
-            tableLayout="fixed"
+            layout="fixed"
             horizontalSpacing="xs"
             verticalSpacing="sm"
           >

@@ -1,18 +1,29 @@
 import { readFileSync } from 'node:fs';
-import { expect, test } from '@playwright/test';
+import { expect, test as base } from '@playwright/test';
 import { actionsText, keyLabel, keyVariants, labelText } from '../src/layout.js';
+
+const test = base.extend({
+  page: async ({ page }, use) => {
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+      if (['error', 'warning'].includes(message.type())) errors.push(message.text());
+    });
+    await use(page);
+    expect(errors).toEqual([]);
+  },
+});
 
 for (const name of ['abc', 'kana', 'num']) {
   const layout = JSON.parse(readFileSync(new URL(`../../${name}.json`, import.meta.url), 'utf8'));
 
   test(`${name}: every source key, flick, and action is available without importing`, async ({ page }) => {
-    const errors = [];
     const requests = [];
-    page.on('pageerror', (error) => errors.push(error.message));
     page.on('request', (request) => requests.push({ method: request.method(), url: request.url() }));
     await page.goto('/');
     await page.getByRole('radiogroup', { name: 'レイアウト' }).getByText(name, { exact: true }).click();
     const grid = page.getByRole('table', { name: `${name}のキー配置`, exact: true });
+    await expect(grid).toHaveCSS('table-layout', 'fixed');
     await expect(grid.getByRole('row')).toHaveCount(4);
     await expect(grid.getByRole('cell')).toHaveCount(19);
     await expect(grid.getByRole('button')).toHaveCount(19);
@@ -55,8 +66,8 @@ for (const name of ['abc', 'kana', 'num']) {
     const enterBox = await enter.boundingBox();
     const ordinaryBox = await ordinary.boundingBox();
     expect(enterBox.height).toBeGreaterThan(ordinaryBox.height * 1.5);
-    expect(errors).toEqual([]);
-    expect(requests.every((request) => request.method === 'GET' && request.url.startsWith('http://127.0.0.1:4173/'))).toBe(true);
+    const { origin } = new URL(page.url());
+    expect(requests.every((request) => request.method === 'GET' && new URL(request.url).origin === origin)).toBe(true);
     await expect(page.locator('input[type="file"], textarea, [contenteditable="true"]')).toHaveCount(0);
   });
 }

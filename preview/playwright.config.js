@@ -8,14 +8,21 @@ export default defineConfig({
   retries: 0,
   reporter: 'list',
   use: {
-    baseURL: 'http://127.0.0.1:4173',
     browserName: 'chromium',
     headless: true,
   },
-  webServer: {
-    command: 'npm run serve -- --port 4173 --strictPort',
-    url: 'http://127.0.0.1:4173',
-    reuseExistingServer: false,
-    timeout: 30000,
-  },
+  projects: [
+    { name: 'production', use: { baseURL: 'http://127.0.0.1:4173' } },
+    { name: 'development', use: { baseURL: 'http://127.0.0.1:5173' } },
+  ],
+  webServer: [
+    {
+      command: 'npm run serve -- --port 4173 --strictPort',
+      url: 'http://127.0.0.1:4173',
+    },
+    {
+      command: 'npm start -- --port 5173 --strictPort',
+      url: 'http://127.0.0.1:5173',
+    },
+  ],
 });
