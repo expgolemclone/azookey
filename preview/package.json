@@ -1,0 +1,24 @@
+{
+  "name": "azookey-preview",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "test:unit": "node --test tests/layout.test.js",
+    "test:browser": "playwright test",
+    "test": "npm run test:unit && npm run build && npm run test:browser"
+  },
+  "dependencies": {
+    "@mantine/core": "9.7.3",
+    "@mantine/hooks": "9.7.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@vitejs/plugin-react": "6.1.2",
+    "vite": "8.3.4"
+  }
+}
