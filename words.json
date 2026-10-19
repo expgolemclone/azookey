@@ -1,5 +1,5 @@
 {
-  "identifier": "Words",
+  "identifier": "words",
   "input_style": "direct",
   "interface": {
     "key_layout": {
@@ -1238,7 +1238,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "ABC"
+              "text": "abc"
             }
           },
           "longpress_actions": {
@@ -1247,7 +1247,7 @@
           },
           "press_actions": [
             {
-              "identifier": "ABC",
+              "identifier": "abc",
               "tab_type": "custom",
               "type": "move_tab"
             }
@@ -1268,7 +1268,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "あいう"
+              "text": "kana"
             }
           },
           "longpress_actions": {
@@ -1277,7 +1277,7 @@
           },
           "press_actions": [
             {
-              "identifier": "あいう",
+              "identifier": "kana",
               "tab_type": "custom",
               "type": "move_tab"
             }
@@ -1298,7 +1298,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "☆123"
+              "text": "num"
             }
           },
           "longpress_actions": {
@@ -1307,7 +1307,7 @@
           },
           "press_actions": [
             {
-              "identifier": "☆123",
+              "identifier": "num",
               "tab_type": "custom",
               "type": "move_tab"
             }
@@ -1423,6 +1423,6 @@
   "language": "en_US",
   "metadata": {
     "custard_version": "1.2",
-    "display_name": "Words"
+    "display_name": "words"
   }
 }

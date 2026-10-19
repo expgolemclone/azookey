@@ -7,6 +7,16 @@ import unittest
 REPOSITORY = Path(__file__).resolve().parents[1]
 
 
+def objects(value):
+    if isinstance(value, dict):
+        yield value
+        for child in value.values():
+            yield from objects(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from objects(child)
+
+
 def outward_side_flicks(layout):
     interface = layout["interface"]
     width = interface["key_layout"]["row_count"]
@@ -263,7 +273,7 @@ class LayoutTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.layouts = {
-            path.name: json.loads(path.read_text(encoding="utf-8"))
+            path.stem: json.loads(path.read_text(encoding="utf-8"))
             for path in sorted(REPOSITORY.glob("*.json"))
         }
         if not cls.layouts:
@@ -284,6 +294,35 @@ class LayoutTests(unittest.TestCase):
                     self.assertEqual(
                         key_behavior(entry["key"]), key_behavior(reference["key"])
                     )
+
+    def test_identifiers_match_file_stems(self):
+        for name, layout in self.layouts.items():
+            with self.subTest(layout=name):
+                self.assertEqual(layout["identifier"], name)
+
+    def test_display_names_match_file_stems(self):
+        for name, layout in self.layouts.items():
+            with self.subTest(layout=name):
+                self.assertEqual(layout["metadata"]["display_name"], name)
+
+    def test_custom_tab_targets_are_file_stems(self):
+        for name, layout in self.layouts.items():
+            for action in objects(layout):
+                if action.get("type") == "move_tab" and action["tab_type"] == "custom":
+                    with self.subTest(layout=name, target=action["identifier"]):
+                        self.assertIn(action["identifier"], self.layouts)
+
+    def test_named_tab_keys_display_their_targets(self):
+        for name, layout in self.layouts.items():
+            for key in objects(layout):
+                if "press_actions" not in key:
+                    continue
+                for action in key["press_actions"]:
+                    if action["type"] == "move_tab" and action["tab_type"] == "custom":
+                        with self.subTest(layout=name, target=action["identifier"]):
+                            self.assertEqual(
+                                key["design"]["label"]["text"], action["identifier"]
+                            )
 
     def test_keys_fit_their_grid(self):
         for name, layout in self.layouts.items():

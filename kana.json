@@ -1,5 +1,5 @@
 {
-  "identifier": "あいう",
+  "identifier": "kana",
   "input_style": "direct",
   "interface": {
     "key_layout": {
@@ -14,7 +14,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "☆123"
+              "text": "num"
             }
           },
           "longpress_actions": {
@@ -23,7 +23,7 @@
           },
           "press_actions": [
             {
-              "identifier": "☆123",
+              "identifier": "num",
               "tab_type": "custom",
               "type": "move_tab"
             }
@@ -556,7 +556,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "ABC"
+              "text": "abc"
             }
           },
           "longpress_actions": {
@@ -565,7 +565,7 @@
           },
           "press_actions": [
             {
-              "identifier": "ABC",
+              "identifier": "abc",
               "tab_type": "custom",
               "type": "move_tab"
             }
@@ -1666,7 +1666,7 @@
               "key": {
                 "design": {
                   "label": {
-                    "text": "Words"
+                    "text": "words"
                   }
                 },
                 "longpress_actions": {
@@ -1675,7 +1675,7 @@
                 },
                 "press_actions": [
                   {
-                    "identifier": "Words",
+                    "identifier": "words",
                     "tab_type": "custom",
                     "type": "move_tab"
                   }
@@ -1938,6 +1938,6 @@
   "language": "ja_JP",
   "metadata": {
     "custard_version": "1.2",
-    "display_name": "あいう"
+    "display_name": "kana"
   }
 }
