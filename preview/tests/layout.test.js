@@ -189,17 +189,20 @@ test('help toggles round-trip to the current layout and tab switches retain help
   }
 });
 
-test('the import ZIP contains exactly all six generated JSON layouts', () => {
+test('the import ZIP and direct JSON contain one array of all six layouts', () => {
   const directory = mkdtempSync(join(tmpdir(), 'azookey-export-'));
   try {
-    const output = join(directory, 'layouts.zip');
-    execFileSync(process.execPath, [fileURLToPath(new URL('../scripts/export-layouts.js', import.meta.url)), output]);
-    const files = unzipSync(readFileSync(output));
+    execFileSync(process.execPath, [fileURLToPath(new URL('../scripts/export-layouts.js', import.meta.url)), directory]);
+    const files = unzipSync(readFileSync(join(directory, 'azookey-layouts.zip')));
+    const json = readFileSync(join(directory, 'azookey-layouts.json'), 'utf8');
+    const bundle = JSON.parse(json);
     const expected = Object.values(layouts).flatMap((layout) => [layout, createHelpLayout(layout)]);
-    assert.deepEqual(Object.keys(files).toSorted(), expected.map((layout) => `${layout.identifier}.json`).toSorted());
-    for (const layout of expected) {
-      assert.deepEqual(JSON.parse(strFromU8(files[`${layout.identifier}.json`])), layout);
-    }
+    assert.deepEqual(Object.keys(files), ['azookey-layouts.json']);
+    assert.equal(strFromU8(files['azookey-layouts.json']), json);
+    assert.ok(Array.isArray(bundle));
+    assert.equal(bundle.length, 6);
+    assert.equal(new Set(bundle.map((layout) => layout.identifier)).size, 6);
+    assert.deepEqual(bundle, expected);
   } finally {
     rmSync(directory, { recursive: true });
   }
