@@ -8,7 +8,7 @@ import test from 'node:test';
 import { actionsText, createHelpLayout, isHelpToggle, keyLabel, keyVariants, labelText } from '../src/layout.js';
 
 const files = readdirSync(new URL('../../', import.meta.url))
-  .filter((name) => name.endsWith('.json'))
+  .filter((name) => name.endsWith('.json') && name !== 'azookey-layouts.json')
   .toSorted();
 const layouts = Object.fromEntries(files.map((name) => [
   name.slice(0, -5),
@@ -73,6 +73,19 @@ test('shared symbol keys preserve Markdown backtick counts and the right-flick g
     for (const { key } of variants) {
       assert.equal(actionsText(key.press_actions), `input(text=${JSON.stringify(labelText(key.design.label))})`);
     }
+  }
+});
+
+test('Return taps and left flicks insert a newline in every layout', () => {
+  for (const name of Object.keys(layouts)) {
+    const entry = entryAt(name, 4, 2);
+    assert.equal(keyLabel(entry), 'Return');
+    assert.deepEqual(keyVariants(entry).map(({ direction, key }) => [
+      direction, labelText(key.design.label), key.press_actions,
+    ]), [
+      ['center', 'Return', [{ type: 'input', text: '\n' }]],
+      ['left', 'Return', [{ type: 'input', text: '\n' }]],
+    ]);
   }
 });
 
@@ -219,6 +232,7 @@ test('exports only one import JSON array containing all six layouts', () => {
     assert.equal(bundle.length, 6);
     assert.equal(new Set(bundle.map((layout) => layout.identifier)).size, 6);
     assert.deepEqual(bundle, expected);
+    assert.deepEqual(JSON.parse(readFileSync(new URL('../../azookey-layouts.json', import.meta.url), 'utf8')), expected);
   } finally {
     rmSync(directory, { recursive: true });
   }

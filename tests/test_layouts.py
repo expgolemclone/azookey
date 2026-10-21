@@ -27,13 +27,13 @@ CONTROL_ACTIONS = {
     ("system_image", "delete.left"): [{"type": "delete", "count": 1}],
     ("system_image", "chevron.left"): [{"type": "move_cursor", "count": -1}],
     ("text", "Space"): [{"type": "input", "text": " "}],
-    ("text", "ENTER"): [{"type": "complete"}],
+    ("text", "Return"): [{"type": "input", "text": "\n"}],
 }
 CONTROL_POSITIONS = {
     ("system_image", "delete.left"): (4, 0, 1, 1),
     ("system_image", "chevron.left"): (0, 1, 1, 1),
     ("text", "Space"): (4, 1, 1, 1),
-    ("text", "ENTER"): (4, 2, 1, 2),
+    ("text", "Return"): (4, 2, 1, 2),
 }
 
 
@@ -101,6 +101,7 @@ class LayoutTests(unittest.TestCase):
         path.stem: json.loads(path.read_text(encoding="utf-8"),
                               object_pairs_hook=unique_object)
         for path in sorted(REPOSITORY.glob("*.json"))
+        if path.name != "azookey-layouts.json"
     }
 
     def assert_label_contract(self, label):
@@ -286,7 +287,7 @@ class LayoutTests(unittest.TestCase):
                     for direction, text in (("top", "``"), ("right", ">"), ("bottom", "``````"))
                 })
 
-    def test_enter_left_flick_inserts_newline_without_hold_actions(self):
+    def test_return_left_flick_inserts_newline_without_hold_actions(self):
         for name, layout in self.layouts.items():
             enter = next(entry["key"] for entry in layout["interface"]["keys"]
                          if entry["specifier"]["x"] == 4 and entry["specifier"]["y"] == 2)
@@ -565,10 +566,12 @@ class ValidationRegressionTests(unittest.TestCase):
              lambda layouts: key(layouts, "num", 4, 0)["design"]["label"].update(system_image="trash")),
             ("shared_controls_are_present_correct_and_consistent", "changed control action",
              lambda layouts: key(layouts, "num", 4, 0)["press_actions"][0].update(count=2)),
-            ("shared_controls_are_present_correct_and_consistent", "newline on enter tap",
+            ("shared_controls_are_present_correct_and_consistent", "completion on return tap",
              lambda layouts: key(layouts, "num", 4, 2).update(
-                 press_actions=[{"type": "input", "text": "\n"}])),
-            ("enter_left_flick_inserts_newline_without_hold_actions", "completion on return flick",
+                 press_actions=[{"type": "complete"}])),
+            ("input_labels_match_their_actions", "legacy enter label",
+             lambda layouts: key(layouts, "eng", 4, 2)["design"]["label"].update(text="ENTER")),
+            ("return_left_flick_inserts_newline_without_hold_actions", "completion on return flick",
              lambda layouts: key(layouts, "num", 4, 2)["variations"][0]["key"].update(
                  press_actions=[{"type": "complete"}])),
             ("tab_links_are_complete_valid_and_labelled", "obsolete words tab",

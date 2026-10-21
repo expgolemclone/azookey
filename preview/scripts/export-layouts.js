@@ -5,7 +5,7 @@ import { createHelpLayout } from '../src/layout.js';
 
 const root = new URL('../../', import.meta.url);
 const sources = await Promise.all((await readdir(root))
-  .filter((name) => name.endsWith('.json'))
+  .filter((name) => name.endsWith('.json') && name !== 'azookey-layouts.json')
   .toSorted()
   .map(async (name) => JSON.parse(await readFile(new URL(name, root), 'utf8'))));
 const layouts = sources.flatMap((layout) => [layout, createHelpLayout(layout)]);

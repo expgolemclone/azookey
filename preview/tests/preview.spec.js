@@ -95,7 +95,7 @@ test('preview controls use English while kana labels and actions stay Japanese',
   await expect(page.getByRole('table')).toHaveCount(0);
   await expect(page.getByText('Read-only', { exact: true })).toHaveCount(0);
   const grid = await selectLayout(page, 'ja');
-  for (const label of ['ja', 'Space', 'ENTER', '⌫', 'Small/Voiced', 'あ']) {
+  for (const label of ['ja', 'Space', 'Return', '⌫', 'Small/Voiced', 'あ']) {
     await expect(grid.getByRole('button', { name: `${label}, x=`, exact: false })).toHaveText(label);
   }
   await keyAt(grid, 4, 1).click();
@@ -211,7 +211,7 @@ test('the bottom-left tap toggles all flick hints and preserves help when switch
   await expect(keyAt(grid, 0, 3)).toHaveAttribute('aria-pressed', 'false');
 });
 
-test('normal keys are neutral and cursor keys share Space and ENTER special colors', async ({ page }) => {
+test('normal keys are neutral and cursor keys share Space and Return special colors', async ({ page }) => {
   await page.goto('/');
   for (const name of Object.keys(layouts)) {
     const grid = await selectLayout(page, name);
@@ -234,6 +234,21 @@ test('normal keys are neutral and cursor keys share Space and ENTER special colo
       expect(colors[0]).toEqual(colors[1]);
       expect(colors[0]).toEqual(colors[2]);
     }
+  }
+});
+
+test('Return taps and left flicks show newline input in normal and help layouts', async ({ page }) => {
+  await page.goto('/');
+  for (const name of Object.keys(layouts)) {
+    const grid = await selectLayout(page, name);
+    for (const showHelp of [false, true]) {
+      if (showHelp) await keyAt(grid, 0, 3).click();
+      await keyAt(grid, 4, 2).click();
+      for (const direction of ['center', 'left']) {
+        await expect(actionRow(page, direction).getByRole('cell')).toHaveText(['Return', 'input(text="\\n")']);
+      }
+    }
+    await keyAt(grid, 0, 3).click();
   }
 });
 

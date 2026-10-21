@@ -17,7 +17,7 @@ import '@mantine/core/styles.css';
 import { actionsText, createHelpLayout, helpIdentifier, isHelpToggle, keyLabel, keyVariants, labelText } from './layout.js';
 import classes from './main.module.css';
 
-const layouts = Object.values(import.meta.glob('../../*.json', {
+const layouts = Object.values(import.meta.glob(['../../*.json', '!../../azookey-layouts.json'], {
   eager: true,
   import: 'default',
 })).toSorted((left, right) => left.identifier.localeCompare(right.identifier));

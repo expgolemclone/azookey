@@ -1500,7 +1500,7 @@
           "design": {
             "color": "special",
             "label": {
-              "text": "ENTER"
+              "text": "Return"
             }
           },
           "longpress_actions": {
@@ -1509,7 +1509,8 @@
           },
           "press_actions": [
             {
-              "type": "complete"
+              "text": "\n",
+              "type": "input"
             }
           ],
           "variations": [
